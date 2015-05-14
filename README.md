@@ -1,5 +1,3 @@
-<snippet>
-  <content><![CDATA[
 #BACI Administration Apps
 
 Small applications for administration. This will include a mileage, sick forms and new hire apps.
@@ -12,6 +10,6 @@ Small applications for administration. This will include a mileage, sick forms a
 
 ## Directory
 
-<repository_root>/
-	<django_project_root>/
-		<configuration_root>/
+repository_root/
+	django_project_root/
+		configuration_root/
