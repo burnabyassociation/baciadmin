@@ -39,7 +39,6 @@ INSTALLED_APPS = (
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'mileage',
-    'djangobower',
 )
 
 MIDDLEWARE_CLASSES = (
