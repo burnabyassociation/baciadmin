@@ -8,30 +8,12 @@
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
     </script></script>
 
-    <!--Polymer Stuff -->
-    <link rel="import"
-    href="../../components/core-header-panel/core-header-panel.html">
-    <link rel="import"
-    href="../../components/core-toolbar/core-toolbar.html">
 </head>
 
 <body>
-    <core-header-panel>
-
-        <core-toolbar>
-
-            <paper-tabs id="tabs" selected="all" self-end>
-                <paper-tab name="all">Mileages</paper-tab>
-                <paper-tab name="favorites">Sign Out</paper-tab>
-            </paper-tabs>
-
-        </core-toolbar>
-
         <div class="container">
             {% block content %}{% endblock %}
         </div>
-
-    </core-header-panel>
 
 </body>
 </html>
