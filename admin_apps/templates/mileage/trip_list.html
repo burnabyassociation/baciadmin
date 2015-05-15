@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>List of Trips</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <td>Staff</td>
+                <td>Date</td>
+                <td>Odometer Start</td>
+                <td>Odometer End</td>
+                <td>Description of Trip</td>
+                <td>Amount Owed</td>
+                <td>Paid</td>
+        <tbody>
+        {% for trip in object_list %}
+            <tr>
+                <td>{{ trip.user }}</td>
+                <td>{{ trip.created }}</td>
+                <td>{{ trip.trip_begin }}</td>
+                <td>{{ trip.trip_end }}</td>
+                <td>{{ trip.description }}</td>
+                <td>${{ trip.get_amount_owed}}</td>
+                <td>{{ trip.paid }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -1,3 +1,8 @@
-from django.shortcuts import render
+# mileage/views.py
 
-# Create your views here.
+from django.views.generic import ListView
+from mileage.models import Trip
+
+
+class TripList(ListView):
+    model = Trip
