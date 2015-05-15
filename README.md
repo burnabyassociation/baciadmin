@@ -10,8 +10,3 @@ Small applications for administration. This will include a mileage, sick forms a
 4. Make the tables `manage.py migrate`
 5. Add the test data `manage.py loaddoata data.json`
 
-## Directory
-
-repository_root/
-	django_project_root/
-		configuration_root/
