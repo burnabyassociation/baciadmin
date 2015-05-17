@@ -3,7 +3,10 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.views import generic
 from django.views.generic import detail
+from django.views.generic import ListView
+from django.views.generic.edit import CreateView
 from mileage.models import Trip
+#from mileage.models import User
 
 from braces import views
 
