@@ -39,7 +39,7 @@ INSTALLED_APPS = (
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'mileage',
-    'djangobower',
+    'crispy_forms',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -86,6 +86,7 @@ AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
 SOCIALACCOUNT_QUERY_EMAIL =True
 
 WSGI_APPLICATION = 'config.wsgi.application'

@@ -10,28 +10,15 @@
 
     <!--Polymer Stuff -->
     <link rel="import"
-    href="../../components/core-header-panel/core-header-panel.html">
+    href="../components/core-header-panel/core-header-panel.html">
     <link rel="import"
-    href="../../components/core-toolbar/core-toolbar.html">
+    href="../components/core-toolbar/core-toolbar.html">
 </head>
 
 <body>
-    <core-header-panel>
-
-        <core-toolbar>
-
-            <paper-tabs id="tabs" selected="all" self-end>
-                <paper-tab name="all">Mileages</paper-tab>
-                <paper-tab name="favorites">Sign Out</paper-tab>
-            </paper-tabs>
-
-        </core-toolbar>
-
         <div class="container">
             {% block content %}{% endblock %}
         </div>
-
-    </core-header-panel>
 
 </body>
 </html>
