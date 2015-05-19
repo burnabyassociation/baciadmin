@@ -10,7 +10,7 @@ from mileage.models import Trip
 
 from braces import views
 
-from mileage.forms import TripForm
+from mileage.forms import TripStartForm
 
 class TripDisplay(
     generic.ListView):
@@ -23,7 +23,7 @@ class TripDisplay(
 
     def get_context_data(self, **kwargs):
         context = super(TripDisplay, self).get_context_data(**kwargs)
-        context['form'] = TripForm
+        context['form'] = TripStartForm
         return context
 
 class TripAdd(
@@ -34,9 +34,10 @@ class TripAdd(
 
     template_name = 'mileage/trip_list.html'
     model = Trip
-    fields = ['trip_begin','trip_end','description']
+    fields = ['trip_begin','description']
 
     def get_success_url(self):
+        #redirects to edit to add trip end
         return reverse('mileage:list')
 
     def form_valid(self, form):
