@@ -27,7 +27,7 @@
         </div>
     {% endif %}
     <!-- End Pagination Stuff -->
-    <table class="table">
+    <table class="table display" id="tripTable" cellspacing="0" width="100%">
         <thead>
             <tr>
                 <td>Staff</td>
@@ -52,4 +52,10 @@
         {% endfor %}
         </tbody>
     </table>
+
+    <script>
+$(document).ready(function() {
+    $('#tripTable').DataTable();
+});
+</script>
 {% endblock %}
