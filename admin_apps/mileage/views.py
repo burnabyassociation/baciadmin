@@ -4,7 +4,7 @@ from django.shortcuts import redirect
 from django.views import generic
 from django.views.generic import detail
 from django.views.generic import ListView
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView
 from mileage.models import Trip
 #from mileage.models import User
 
@@ -38,7 +38,7 @@ class TripAdd(
 
     def get_success_url(self):
         #redirects to edit to add trip end
-        return reverse('mileage:list')
+        return reverse('mileage:edit', kwargs={'pk': self.object.pk})
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
@@ -50,7 +50,7 @@ class TripList(generic.View):
     """
     View that is sent to URLConf to split the class into two CBV
     """
-
+    Trip.objects.order_by('-create')
     def get(self, request, *args, **kwargs):
         view = TripDisplay.as_view()
         return view(request, *args, **kwargs)
@@ -58,3 +58,12 @@ class TripList(generic.View):
     def post(self, request, *args, **kwargs):
         view = TripAdd.as_view()
         return view(request, *args, **kwargs)
+
+class TripEdit(generic.UpdateView):
+    template_name = 'mileage/trip_edit.html'
+    model = Trip
+    fields = ['trip_end']
+    def get_success_url(self):
+        return reverse('mileage:list')
+        
+

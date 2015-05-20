@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
-
 {% block content %}
 <!-- Adding a Trip Section -->
     <h2> Add a Trip</h2>
@@ -19,7 +18,7 @@
                     <a href="/mileage?page={{ page_obj.previous_page_number }}">previous</a>
                 {% endif %}
                 <span class="page-current">
-                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
                 </span>
                 {% if page_obj.has_next %}
                     <a href="/mileage?page={{ page_obj.next_page_number }}">next</a>
@@ -39,10 +38,11 @@
                 <td>Amount Owed</td>
                 <td>Paid</td>
         <tbody>
+        
         {% for trip in object_list %}
             <tr>
                 <td>{{ trip.user }}</td>
-                <td>{{ trip.created }}</td>
+                <td>{{ trip.created|date:"d/m/y f A" }}</td>
                 <td>{{ trip.trip_begin }}</td>
                 <td>{{ trip.trip_end }}</td>
                 <td>{{ trip.description }}</td>

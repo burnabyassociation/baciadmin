@@ -15,6 +15,8 @@ class TimeStampedModel(models.Model):
     class Meta:
         abstract = True
 
+
+
 class Trip(TimeStampedModel):
     """
     Staff will track a trip by it's odometer. They will record the beginning
@@ -22,7 +24,7 @@ class Trip(TimeStampedModel):
     """
     user = models.ForeignKey(User)
     trip_begin = models.IntegerField(blank=False)
-    trip_end = models.IntegerField(blank=False)
+    trip_end = models.IntegerField(default=0)
     description = models.TextField(blank=False)
     paid = models.BooleanField(default=False)
 

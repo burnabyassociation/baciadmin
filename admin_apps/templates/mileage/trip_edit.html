@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<!-- Adding a Trip Section -->
+    <h2>Add Trip Step 2</h2>
+       <form action="" method="post">{% csrf_token %}
+            {{ form|crispy }}
+            <input type="submit" value="End" />
+       </form>
+{% endblock %}
