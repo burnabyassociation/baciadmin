@@ -11,24 +11,8 @@
 
 <!-- Trip Listing Section -->
     <h2>List of Trips</h2>
-    <!-- Pagniation Stuff -->
-         {% if is_paginated %}
-        <div class="pagination">
-            <span class="page-links">
-                {% if page_obj.has_previous %}
-                    <a href="/mileage?page={{ page_obj.previous_page_number }}">previous</a>
-                {% endif %}
-                <span class="page-current">
-                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-                </span>
-                {% if page_obj.has_next %}
-                    <a href="/mileage?page={{ page_obj.next_page_number }}">next</a>
-                {% endif %}
-            </span>
-        </div>
-    {% endif %}
     <!-- End Pagination Stuff -->
-    <table class="table">
+    <table class="table display" id="tripTable" cellspacing="0" width="100%">
         <thead>
             <tr>
                 <td>Staff</td>
@@ -52,4 +36,10 @@
         {% endfor %}
         </tbody>
     </table>
+
+    <script>
+$(document).ready(function() {
+    $('#tripTable').DataTable();
+});
+</script>
 {% endblock %}

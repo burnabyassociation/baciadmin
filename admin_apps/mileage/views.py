@@ -26,6 +26,11 @@ class TripDisplay(
         context['form'] = TripStartForm
         return context
 
+    def get_queryset(self):
+        queryset = super(TripDisplay, self).get_queryset()
+        queryset = queryset.order_by('-created')
+        return queryset
+
 class TripAdd(
     generic.CreateView):
     """
@@ -34,8 +39,7 @@ class TripAdd(
 
     template_name = 'mileage/trip_list.html'
     model = Trip
-    fields = ['trip_begin','description']
-
+    fields = ('trip_begin', 'description')
     def get_success_url(self):
         #redirects to edit to add trip end
         return reverse('mileage:list')
