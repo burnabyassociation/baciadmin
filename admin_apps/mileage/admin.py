@@ -14,9 +14,13 @@ class TripAdmin(admin.ModelAdmin):
 	def mark_as_unpaid(self, request, queryset):
 	    queryset.update(paid=False)
 
-
 	list_display= ('user','paid','approved','description')
+	list_filter=(
+		('paid', admin.BooleanFieldListFilter),'approved'
+    )
 	actions = [mark_as_paid, mark_as_unpaid]
+	search_fields = ['description','user__username']
+
 
 """class PayPeriodInline(admin.StackedInline):
     model = PayPeriod
