@@ -39,6 +39,7 @@ class Trip(TimeStampedModel):
     trip_end = models.IntegerField(default=0)
     description = models.TextField(blank=False)
     paid = models.BooleanField(default=False)
+    approved = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.description
