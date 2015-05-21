@@ -1,17 +1,22 @@
 from django.contrib import admin
 from mileage.models import Trip, PayPeriod
 
-def mark_as_paid(modeladmin, request, queryset):
-    queryset.update(paid=True)
-    
-
-def mark_as_unpaid(modeladmin, request, queryset):
-    queryset.update(paid=False)
-
 class TripAdmin(admin.ModelAdmin):
-    list_display= ('user','paid','approved','description')
-    list_editable = ('paid','approved')
-    actions = [mark_as_paid, mark_as_unpaid]
+
+	def mark_as_paid(self, request, queryset):
+	    rows_updated = queryset.update(paid=True)
+	    if rows_updated == 1:
+	        message_bit = "1 trip was"
+	    else:
+	        message_bit = "%s trips were" % rows_updated
+	    self.message_user(request, "%s successfully marked as paid." % message_bit)
+
+	def mark_as_unpaid(self, request, queryset):
+	    queryset.update(paid=False)
+
+
+	list_display= ('user','paid','approved','description')
+	actions = [mark_as_paid, mark_as_unpaid]
 
 """class PayPeriodInline(admin.StackedInline):
     model = PayPeriod
