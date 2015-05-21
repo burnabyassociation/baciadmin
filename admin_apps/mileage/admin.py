@@ -1,9 +1,17 @@
 from django.contrib import admin
 from mileage.models import Trip, PayPeriod
 
+def mark_as_paid(modeladmin, request, queryset):
+    queryset.update(paid=True)
+    
+
+def mark_as_unpaid(modeladmin, request, queryset):
+    queryset.update(paid=False)
+
 class TripAdmin(admin.ModelAdmin):
     list_display= ('user','paid','approved','description')
-    search_fields = ['description']
+    list_editable = ('paid','approved')
+    actions = [mark_as_paid, mark_as_unpaid]
 
 """class PayPeriodInline(admin.StackedInline):
     model = PayPeriod
