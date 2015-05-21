@@ -5,19 +5,50 @@ from django.views import generic
 from django.views.generic import detail
 from django.views.generic import ListView
 from django.views.generic.edit import CreateView, UpdateView
-from mileage.models import Trip
+from mileage.models import Trip, PayPeriod
 #from mileage.models import User
 
 from braces import views
 
-from mileage.forms import TripStartForm
+from mileage.forms import TripStartForm, PayPeriodAddForm
+
+class PayPeriodDisplay(generic.ListView):
+    model = PayPeriod
+    def get_context_data(self, **kwargs):
+        context = super(PayPeriodDisplay, self).get_context_data(**kwargs)
+        context['payperiods']=PayPeriod.objects.all()
+        context['current']=PayPeriod.get_current_pay_period()
+        context['form']=PayPeriodAdmin
+        return context
+
+    def get_queryset(self):
+        queryset = super(PayPeriodDisplay, self).get_queryset()
+        queryset = queryset.order_by('-due')
+        return queryset
+
+
+class PayPeriodAdd(generic.CreateView):
+
+    model = PayPeriod
+    fields = ('due')
+
+    
+    def get_success_url(self):
+        #redirects to edit to add trip end
+        return reverse('mileage:payperiod', kwargs={'pk': self.object.pk})
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.user = self.request.user
+        self.object.save()
+        return super(PayPeriodAdd, self).form_valid(form)
+
 
 class TripDisplay(
     generic.ListView):
     """
     Handles get() for the TripList View.
     """
-
     model = Trip
     paginate_by = 10
 
@@ -62,6 +93,23 @@ class TripList(generic.View):
     def post(self, request, *args, **kwargs):
         view = TripAdd.as_view()
         return view(request, *args, **kwargs)
+
+class PayPeriodList(generic.View):
+    """
+    View that is sent to URLConf to split the class into two CBV
+    """
+    PayPeriod.objects.order_by('-due')
+    def get(self, request, *args, **kwargs):
+        view = PayPeriodDisplay.as_view()
+        return view(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        view = PayPeriodAdd.as_view()
+        return view(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return reverse('mileage:payperiodlist')
+
 
 class TripEdit(generic.UpdateView):
     template_name = 'mileage/trip_edit.html'

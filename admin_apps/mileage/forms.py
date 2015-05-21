@@ -1,7 +1,7 @@
 from django import forms 
 from django.db import models
 
-from mileage.models import Trip
+from mileage.models import Trip, PayPeriod
 
 class TripStartForm(forms.Form):
     class Meta:
@@ -9,3 +9,9 @@ class TripStartForm(forms.Form):
 
     trip_begin = forms.CharField(label="Odometer Start")
     description = forms.CharField(label="Trip Purpose")
+
+class PayPeriodAddForm(forms.Form):
+    class Meta:
+        model = PayPeriod
+
+    due = forms.DateField(label="Due")

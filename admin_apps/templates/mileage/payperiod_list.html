@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<!-- Adding a Trip Section -->
+    <h2> Add a Pay Period</h2>
+       <form action="" method="post">{% csrf_token %}
+            {{ form|crispy }}
+            <input type="submit" value="Add" />
+        </form>
+
+<!-- Trip Listing Section -->
+    <h2>List of Trips</h2>
+    <!-- Pagniation Stuff -->
+         {% if is_paginated %}
+        <div class="pagination">
+            <span class="page-links">
+                {% if page_obj.has_previous %}
+                    <a href="/mileage?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+                <span class="page-current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </span>
+                {% if page_obj.has_next %}
+                    <a href="/mileage?page={{ page_obj.next_page_number }}">next</a>
+                {% endif %}
+            </span>
+        </div>
+    {% endif %}
+    <!-- End Pagination Stuff -->
+    <table class="table display" id="payperiodTable" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <td>Due</td>
+                <td>Date Added</td>
+        <tbody>
+        
+        {% for payperiod in object_list %}
+            <tr>
+                <td>{{ payperiod.due }}</td>
+                <td>{{ payperiod.created|date:"d/m/y f A"  }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+</script>
+{% endblock %}
