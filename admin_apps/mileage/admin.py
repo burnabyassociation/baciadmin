@@ -1,5 +1,5 @@
 from django.contrib import admin
-from mileage.models import Trip, PayPeriod
+from mileage.models import Trip, Payperiod
 
 class TripAdmin(admin.ModelAdmin):
 
@@ -12,7 +12,12 @@ class TripAdmin(admin.ModelAdmin):
 	    self.message_user(request, "%s successfully marked as paid." % message_bit)
 
 	def mark_as_unpaid(self, request, queryset):
-	    queryset.update(paid=False)
+	    rows_updated = queryset.update(paid=False)
+	    if rows_updated == 1:
+	        message_bit = "1 trip was"
+	    else:
+	        message_bit = "%s trips were" % rows_updated
+	    self.message_user(request, "%s successfully marked as unpaid." % message_bit)
 
 	list_display= ('user','paid','approved','description')
 	list_filter=(
@@ -21,16 +26,9 @@ class TripAdmin(admin.ModelAdmin):
 	actions = [mark_as_paid, mark_as_unpaid]
 	search_fields = ['description','user__username']
 
-
-"""class PayPeriodInline(admin.StackedInline):
-    model = PayPeriod
-    extra = 3"""
-
-class PayPeriodAdmin(admin.ModelAdmin):
-	Model = PayPeriod
-	extra = 3
-    #inlines = [PayPeriodInline,]
-
+class PayperiodAdmin(admin.ModelAdmin):
+    model = Payperiod
+    list_display= ('due','created')
 
 admin.site.register(Trip, TripAdmin)
-admin.site.register(PayPeriod, PayPeriodAdmin)
+admin.site.register(Payperiod, PayperiodAdmin)

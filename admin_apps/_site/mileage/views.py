@@ -5,36 +5,36 @@ from django.views import generic
 from django.views.generic import detail
 from django.views.generic import ListView
 from django.views.generic.edit import CreateView, UpdateView
-from mileage.models import Trip, PayPeriod
+from mileage.models import Trip, Payperiod
 #from mileage.models import User
 
 from braces import views
 
-from mileage.forms import TripStartForm, PayPeriodAddForm
+from mileage.forms import TripStartForm
 
-class PayPeriodDisplay(generic.View):
-    model = PayPeriod
+class PayperiodDisplay(generic.View):
+    model = Payperiod
 
     def get_context_data(self, **kwargs):
-        context = super(PayPeriodDisplay, self).get_context_data(**kwargs)
-        context['payperiods']=PayPeriod.objects.all()
-        context['form']=PayPeriodForm
+        context = super(PayperiodDisplay, self).get_context_data(**kwargs)
+        context['payperiods']=Payperiod.objects.all()
+        context['form']=PayperiodForm
 
         Trip.objects.order_by('-date')
     def get(self, request, *args, **kwargs):
-        view = PayPeriodDisplay.as_view()
+        view = PayperiodDisplay.as_view()
         return view(request, *args, **kwargs)
 
-class PayPeriodAdd(generic.CreateView):
+class PayperiodAdd(generic.CreateView):
     template_name='mileage/trip_list.html'
-    model = PayPeriod
+    model = Payperiod
     fields = ('date')
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
         self.object.user = self.request.user
         self.object.save()
-        return super(PayPeriodAdd, self).form_valid(form)
+        return super(PayperiodAdd, self).form_valid(form)
 
 
 class TripDisplay(

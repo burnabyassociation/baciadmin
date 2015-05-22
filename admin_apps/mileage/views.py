@@ -5,33 +5,32 @@ from django.views import generic
 from django.views.generic import detail
 from django.views.generic import ListView
 from django.views.generic.edit import CreateView, UpdateView
-from mileage.models import Trip, PayPeriod
+from mileage.models import Trip, Payperiod
 #from mileage.models import User
 
 from braces import views
 
-from mileage.forms import TripStartForm, PayPeriodAddForm
+from mileage.forms import TripStartForm
 
-class PayPeriodDisplay(generic.ListView):
-    model = PayPeriod
+class PayperiodDisplay(generic.ListView):
+    model = Payperiod
     def get_context_data(self, **kwargs):
-        context = super(PayPeriodDisplay, self).get_context_data(**kwargs)
-        context['payperiods']=PayPeriod.objects.all()
-        context['current']=PayPeriod.get_current_pay_period()
-        context['form']=PayPeriodAdmin
+        context = super(PayperiodDisplay, self).get_context_data(**kwargs)
+        context['payperiods']=Payperiod.objects.all()
+        context['current']=Payperiod.get_current_pay_period()
+        context['form']=PayperiodAdmin
         return context
 
     def get_queryset(self):
-        queryset = super(PayPeriodDisplay, self).get_queryset()
+        queryset = super(PayperiodDisplay, self).get_queryset()
         queryset = queryset.order_by('-due')
         return queryset
 
 
-class PayPeriodAdd(generic.CreateView):
+class PayperiodAdd(generic.CreateView):
 
-    model = PayPeriod
+    model = Payperiod
     fields = ('due')
-
     
     def get_success_url(self):
         #redirects to edit to add trip end
@@ -41,7 +40,7 @@ class PayPeriodAdd(generic.CreateView):
         self.object = form.save(commit=False)
         self.object.user = self.request.user
         self.object.save()
-        return super(PayPeriodAdd, self).form_valid(form)
+        return super(PayperiodAdd, self).form_valid(form)
 
 
 class TripDisplay(
@@ -94,17 +93,17 @@ class TripList(generic.View):
         view = TripAdd.as_view()
         return view(request, *args, **kwargs)
 
-class PayPeriodList(generic.View):
+class PayperiodList(generic.View):
     """
     View that is sent to URLConf to split the class into two CBV
     """
-    PayPeriod.objects.order_by('-due')
+    Payperiod.objects.order_by('-due')
     def get(self, request, *args, **kwargs):
-        view = PayPeriodDisplay.as_view()
+        view = PayperiodDisplay.as_view()
         return view(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        view = PayPeriodAdd.as_view()
+        view = PayperiodAdd.as_view()
         return view(request, *args, **kwargs)
 
     def get_success_url(self):

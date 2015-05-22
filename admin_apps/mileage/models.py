@@ -15,7 +15,7 @@ class TimeStampedModel(models.Model):
     class Meta:
         abstract = True
 
-class PayPeriod(TimeStampedModel):
+class Payperiod(TimeStampedModel):
     #user = models.ForeignKey(User, default=0)
     due = models.DateTimeField(blank=False)
 
@@ -23,7 +23,7 @@ class PayPeriod(TimeStampedModel):
         return self.due.strftime('%m/%d/%Y')
 
     def get_current_pay_period(self):
-        current = PayPeriod.objects.order_by('-due').pop()
+        current = Payperiod.objects.order_by('-due').pop()
         return current
 
     def get_absolute_url(self):

@@ -15,14 +15,19 @@ class TimeStampedModel(models.Model):
     class Meta:
         abstract = True
 
-class PayPeriod(TimeStampedModel):
-    payperiods = models.DateTimeField(blank=False)
+class Payperiod(TimeStampedModel):
+
+    due = models.DateTimeField(blank=False)
+
 
     def __unicode__(self):
         return self.date
-
+        
+    @classmethod
     def get_next_pay_period(self):
-        return payperiods
+        p = Payperiod.objects.all().order_by('-due')[0]
+        Payperiod.objects.all().order_by('-due')[0].delete()
+        return p
 
 class Trip(TimeStampedModel):
     """

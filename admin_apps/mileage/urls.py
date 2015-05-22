@@ -3,7 +3,6 @@ from mileage import views
 
 urlpatterns = patterns ('',
     url(r'^$', views.TripList.as_view(), name='list'),
-    url(r'^$', views.PayPeriodList.as_view(), name='payperiodlist'),
     url(r'^edit/(?P<pk>\d+)/$', views.TripEdit.as_view(), name='edit'),
     #url(r'^d/(?P<pk>\d+)/$', views.TripDetail.as_view(), name='detail'),
     )
