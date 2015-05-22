@@ -76,13 +76,14 @@ class PayperiodAdd(generic.CreateView):
 
 #Trip Stuff
 class TripDisplay(
+    views.LoginRequiredMixin,
     generic.ListView):
     """
     Handles get() for the TripList View.
     """
     model = Trip
-    paginate_by = 10
-
+    login_url = "../accounts/google/login"
+    
     def get_current_payperiod(self):
         periods = Payperiod.objects.all().order_by('due')
         for period in periods:
@@ -119,6 +120,13 @@ class TripAdd(
         self.object.user = self.request.user
         self.object.save()
         return super(TripAdd, self).form_valid(form)
+
+class SupervisorTripLsit(generic.View):
+    def get(self, request, *args, **kwargs):
+        if request.user.is_staff:
+            return httpresponseerror
+        else:
+            pass
 
 class TripList(generic.View):
     """
