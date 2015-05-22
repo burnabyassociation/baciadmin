@@ -57,3 +57,9 @@ class Trip(TimeStampedModel):
 
     def get_absolute_url(self):
         return reverse('mileage:detail', kwargs={'pk': self.id})
+
+    def clean(self):
+        if self.trip_begin < 0:
+            raise ValidationError("Beginning Mileage cannot be a negative number")
+        if self.trip_end < 0:
+            raise ValidationError("Ending Mileage cannot be a negative number")
