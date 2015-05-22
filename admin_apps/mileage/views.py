@@ -6,11 +6,42 @@ from django.views.generic import detail
 from django.views.generic import ListView
 from django.views.generic.edit import CreateView, UpdateView
 from mileage.models import Trip, Payperiod
+from django.utils import timezone
 #from mileage.models import User
 
 from braces import views
 
 from mileage.forms import TripStartForm
+
+class PayperiodList(generic.ListView):
+    model = Payperiod
+
+    def get_current(self):
+        periods = Payperiod.objects.all().order_by('due')
+        for period in periods:
+            if period.due < timezone.now().date():
+                period.delete()
+        return periods[0]
+
+    def get_context_data(self, **kwargs):
+        context = super(PayperiodList, self).get_context_data(**kwargs)
+        context['current'] = self.get_current()
+        return context
+
+    """
+class PayperiodList(generic.View):
+    Payperiod.objects.order_by('-due')
+    def get(self, request, *args, **kwargs):
+        view = PayperiodDisplay.as_view()
+        return view(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        view = PayperiodAdd.as_view()
+        return view(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return reverse('mileage:payperiodlist')
+
 
 class PayperiodDisplay(generic.ListView):
     model = Payperiod
@@ -25,7 +56,7 @@ class PayperiodDisplay(generic.ListView):
         queryset = super(PayperiodDisplay, self).get_queryset()
         queryset = queryset.order_by('-due')
         return queryset
-
+"""
 
 class PayperiodAdd(generic.CreateView):
 
@@ -43,6 +74,7 @@ class PayperiodAdd(generic.CreateView):
         return super(PayperiodAdd, self).form_valid(form)
 
 
+#Trip Stuff
 class TripDisplay(
     generic.ListView):
     """
@@ -51,9 +83,17 @@ class TripDisplay(
     model = Trip
     paginate_by = 10
 
+    def get_current_payperiod(self):
+        periods = Payperiod.objects.all().order_by('due')
+        for period in periods:
+            if period.due < timezone.now().date():
+                period.delete()
+        return periods[0]
+
     def get_context_data(self, **kwargs):
         context = super(TripDisplay, self).get_context_data(**kwargs)
         context['form'] = TripStartForm
+        context['current'] = self.get_current_payperiod()
         return context
 
     def get_queryset(self):
@@ -84,7 +124,6 @@ class TripList(generic.View):
     """
     View that is sent to URLConf to split the class into two CBV
     """
-    Trip.objects.order_by('-create')
     def get(self, request, *args, **kwargs):
         view = TripDisplay.as_view()
         return view(request, *args, **kwargs)
@@ -92,22 +131,6 @@ class TripList(generic.View):
     def post(self, request, *args, **kwargs):
         view = TripAdd.as_view()
         return view(request, *args, **kwargs)
-
-class PayperiodList(generic.View):
-    """
-    View that is sent to URLConf to split the class into two CBV
-    """
-    Payperiod.objects.order_by('-due')
-    def get(self, request, *args, **kwargs):
-        view = PayperiodDisplay.as_view()
-        return view(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        view = PayperiodAdd.as_view()
-        return view(request, *args, **kwargs)
-
-    def get_success_url(self):
-        return reverse('mileage:payperiodlist')
 
 
 class TripEdit(generic.UpdateView):

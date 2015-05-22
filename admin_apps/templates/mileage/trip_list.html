@@ -3,6 +3,7 @@
 {% block content %}
 <!-- Adding a Trip Section -->
     <h2> Add a Trip</h2>
+    <h4> Current Pay Period: {{ current }}</h4>
        <form action="" method="post">{% csrf_token %}
             {{ form|crispy }}
             <input type="submit" value="Add" />

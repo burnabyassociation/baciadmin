@@ -2,6 +2,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 # Create your models here.
 class TimeStampedModel(models.Model):
@@ -17,19 +19,24 @@ class TimeStampedModel(models.Model):
 
 class Payperiod(TimeStampedModel):
     #user = models.ForeignKey(User, default=0)
-    due = models.DateTimeField(blank=False)
+    due = models.DateField(blank=False)
 
     def __unicode__(self):
         return self.due.strftime('%m/%d/%Y')
 
     @classmethod
-    def get_current_pay_period(self):
+    def get_current_payperiod(self):
         current = Payperiod.objects.all().order_by('-due')[0]
         Payperiod.objects.all().order_by('-due')[0].delete()
         return current
 
     def get_absolute_url(self):
         return reverse('mileage:payperiodlist', kwargs={'pk': self.id})
+    
+    def clean(self):
+        if self.due < timezone.now().date():
+            raise ValidationError("payperiods have to be in the future")
+    
 
 class Trip(TimeStampedModel):
     """
