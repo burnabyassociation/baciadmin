@@ -1,6 +1,13 @@
 {% load staticfiles %}
 <!DOCTYPE>
 <html>
+<script>
+window.setTimeout(function() {
+    $(".alert").fadeTo(500, 0).slideUp(500, function(){
+        $(this).remove(); 
+    });
+}, 2000);
+</script>
 <head>
     <title>{% block title %}BACI Mileage{% endblock title %}</title>
     
@@ -22,14 +29,14 @@
 </head>
 
 <body>
-    {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-              <li{% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>{{ message }}</li>
-            {% endfor %}
-        </ul>
-
-    {% endif %}
+        {% if messages %}
+            <ul style="list-style:none; padding-left:0;" class="messages">
+                {% for message in messages %}
+                  <li{% if message.tags %} class="alert alert-fixed-top alert-{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+            </div>
+        {% endif %}
         <div class="container">
             {% block content %}{% endblock %}
         </div>
