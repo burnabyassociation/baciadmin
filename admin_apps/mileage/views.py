@@ -83,7 +83,7 @@ class TripDisplay(
     """
     model = Trip
     login_url = "../accounts/google/login"
-    
+
     def get_current_payperiod(self):
         periods = Payperiod.objects.all().order_by('due')
         for period in periods:
@@ -103,11 +103,12 @@ class TripDisplay(
         return queryset
 
 class TripAdd(
+    views.FormValidMessageMixin,
     generic.CreateView):
     """
     Handles post() in for the TripList View. Allows addition of trips.
     """
-
+    form_valid_message = "Trip Started. Please add an ending mileage."
     template_name = 'mileage/trip_list.html'
     model = Trip
     fields = ('trip_begin', 'description')
@@ -120,13 +121,6 @@ class TripAdd(
         self.object.user = self.request.user
         self.object.save()
         return super(TripAdd, self).form_valid(form)
-
-class SupervisorTripLsit(generic.View):
-    def get(self, request, *args, **kwargs):
-        if request.user.is_staff:
-            return httpresponseerror
-        else:
-            pass
 
 class TripList(generic.View):
     """
@@ -141,7 +135,11 @@ class TripList(generic.View):
         return view(request, *args, **kwargs)
 
 
-class TripEdit(generic.UpdateView):
+class TripEdit(
+    views.FormValidMessageMixin,
+    generic.UpdateView):
+
+    form_valid_message = "Trip Reimbursement Added."
     template_name = 'mileage/trip_edit.html'
     model = Trip
     fields = ['trip_end']
