@@ -18,7 +18,6 @@ class TripAdmin(admin.ModelAdmin):
 	    else:
 	        message_bit = "%s trips were" % rows_updated
 	    self.message_user(request, "%s successfully marked as unpaid." % message_bit)
-
 	list_display= ('user','paid','approved','description')
 	list_filter=(
 		('paid', admin.BooleanFieldListFilter),'approved'
