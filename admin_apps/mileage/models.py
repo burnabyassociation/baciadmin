@@ -24,12 +24,6 @@ class Payperiod(TimeStampedModel):
     def __unicode__(self):
         return self.due.strftime('%m/%d/%Y')
 
-    @classmethod
-    def get_current_payperiod(self):
-        current = Payperiod.objects.all().order_by('-due')[0]
-        Payperiod.objects.all().order_by('-due')[0].delete()
-        return current
-
     def get_absolute_url(self):
         return reverse('mileage:payperiodlist', kwargs={'pk': self.id})
     
