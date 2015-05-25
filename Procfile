@@ -1,0 +1,1 @@
+web: gunicorn admin_apps.config.wsgi --log-file -

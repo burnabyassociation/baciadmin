@@ -2,6 +2,7 @@
 {% load crispy_forms_tags %}
 {% block content %}
 <!-- Adding a Trip Section -->
+<div class="col-md-12">
     <h2> Add a Trip</h2>
     <h4> Current Pay Period: {{ current }}</h4>
        <form action="" method="post">{% csrf_token %}
@@ -23,6 +24,8 @@
                 <td>Description of Trip</td>
                 <td>Amount Owed</td>
                 <td>Paid</td>
+            </tr>
+        </thead>
         <tbody>
         
         {% for trip in object_list %}
@@ -38,6 +41,7 @@
         {% endfor %}
         </tbody>
     </table>
+</div>
 
     <script>
 $(document).ready(function() {
