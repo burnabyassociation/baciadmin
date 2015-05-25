@@ -76,13 +76,11 @@ class PayperiodAdd(generic.CreateView):
 
 #Trip Stuff
 class TripDisplay(
-    views.LoginRequiredMixin,
     generic.ListView):
     """
     Handles get() for the TripList View.
     """
     model = Trip
-    login_url = "../accounts/google/login"
 
     def get_current_payperiod(self):
         periods = Payperiod.objects.all().order_by('due')
@@ -122,7 +120,31 @@ class TripAdd(
         self.object.save()
         return super(TripAdd, self).form_valid(form)
 
-class TripList(generic.View):
+
+
+class TripAdd(
+    views.FormValidMessageMixin,
+    generic.CreateView):
+    """
+    Handles post() in for the TripList View. Allows addition of trips.
+    """
+    form_valid_message = "Trip Started. Please add an ending mileage."
+    template_name = 'mileage/trip_list.html'
+    model = Trip
+    fields = ('trip_begin', 'description')
+    def get_success_url(self):
+        #redirects to edit to add trip end
+        return reverse('mileage:edit', kwargs={'pk': self.object.pk})
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.user = self.request.user
+        self.object.save()
+        return super(TripAdd, self).form_valid(form)
+
+class TripList(
+    views.LoginRequiredMixin,
+    generic.View):
     """
     View that is sent to URLConf to split the class into two CBV
     """

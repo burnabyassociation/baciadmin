@@ -22,7 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = ')b$=nw6-v652r7#m5m92&u6$=c3umck(n^lst3l&o6so423zv!'
 
 ALLOWED_HOSTS = []
-SITE_ID = 2
+SITE_ID = 1
 
 # Application definition
 
@@ -87,7 +87,8 @@ AUTHENTICATION_BACKENDS = (
 )
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
-SOCIALACCOUNT_QUERY_EMAIL =True
+SOCIALACCOUNT_QUERY_EMAIL = True
+SOCIALACCOUNT_ADAPTER = "adapters.BACISocialAccountAdapter"
 
 WSGI_APPLICATION = 'config.wsgi.application'
 

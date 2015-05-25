@@ -2,9 +2,10 @@
 {% load crispy_forms_tags %}
 {% block content %}
 
-{{current}}
+<h3>Current:</h3> {{current}}
+<h3>Future:</h3>
        {% for period in object_list%}
-        <ul>
+        	<ul>
             <li> {{ period }}</li>
             </ul>
         {% endfor %}
