@@ -57,13 +57,13 @@ class TripDisplayView(
         return periods[0]
 
     def get_context_data(self, **kwargs):
-        context = super(TripDisplay, self).get_context_data(**kwargs)
+        context = super(TripDisplayView, self).get_context_data(**kwargs)
         context['form'] = TripStartForm
         context['current'] = self.get_current_payperiod()
         return context
 
     def get_queryset(self):
-        queryset = super(TripDisplay, self).get_queryset()
+        queryset = super(TripDisplayView, self).get_queryset()
         queryset = queryset.order_by('-created')
         return queryset
 
@@ -86,7 +86,7 @@ class TripAddView(
         self.object = form.save(commit=False)
         self.object.user = self.request.user
         self.object.save()
-        return super(TripAdd, self).form_valid(form)
+        return super(TripAddView, self).form_valid(form)
 
 class TripListView(
     views.LoginRequiredMixin,
@@ -95,11 +95,11 @@ class TripListView(
     View that is sent to URLConf to split the class into two CBV
     """
     def get(self, request, *args, **kwargs):
-        view = TripDisplay.as_view()
+        view = TripDisplayView.as_view()
         return view(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        view = TripAdd.as_view()
+        view = TripAddView.as_view()
         return view(request, *args, **kwargs)
 
 
