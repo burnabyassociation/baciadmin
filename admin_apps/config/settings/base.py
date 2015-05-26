@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'allauth.socialaccount.providers.google',
     'mileage',
     'crispy_forms',
+    'formtools',
 )
 
 MIDDLEWARE_CLASSES = (

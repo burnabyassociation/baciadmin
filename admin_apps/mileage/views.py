@@ -7,75 +7,39 @@ from django.views.generic import ListView
 from django.views.generic.edit import CreateView, UpdateView
 from mileage.models import Trip, Payperiod
 from django.utils import timezone
-#from mileage.models import User
+from django.contrib.auth.models import User
+from django.shortcuts import render_to_response
+from formtools.wizard.views import SessionWizardView
 
 from braces import views
+from extra_views import ModelFormSetView
 
-from mileage.forms import TripStartForm
+from mileage.forms import TripStartForm, TripEndForm
 
-class PayperiodList(generic.ListView):
-    model = Payperiod
+class TripWizard(SessionWizardView):
+    template_name = 'mileage/trip_wizardform.html'
+    form_list = [TripStartForm, TripEndForm]
 
-    def get_current(self):
-        periods = Payperiod.objects.all().order_by('due')
-        for period in periods:
-            if period.due < timezone.now().date():
-                period.delete()
-        return periods[0]
-
-    def get_context_data(self, **kwargs):
-        context = super(PayperiodList, self).get_context_data(**kwargs)
-        context['current'] = self.get_current()
-        return context
-
-    """
-class PayperiodList(generic.View):
-    Payperiod.objects.order_by('-due')
-    def get(self, request, *args, **kwargs):
-        view = PayperiodDisplay.as_view()
-        return view(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        view = PayperiodAdd.as_view()
-        return view(request, *args, **kwargs)
-
-    def get_success_url(self):
-        return reverse('mileage:payperiodlist')
-
-
-class PayperiodDisplay(generic.ListView):
-    model = Payperiod
-    def get_context_data(self, **kwargs):
-        context = super(PayperiodDisplay, self).get_context_data(**kwargs)
-        context['payperiods']=Payperiod.objects.all()
-        context['current']=Payperiod.get_current_pay_period()
-        context['form']=PayperiodAdmin
-        return context
+    def done(self, form_list, **kwargs):
+        return render_to_response('done.html', {
+            'form_data': [form.cleaned_data for form in form_list],
+        })
+class SupervisorFormView(
+    ModelFormSetView):
+    template_name = "mileage/trip_formset.html"
+    model = Trip
+    fields = ('user','trip_begin', 'trip_end','paid','approved')
 
     def get_queryset(self):
-        queryset = super(PayperiodDisplay, self).get_queryset()
-        queryset = queryset.order_by('-due')
-        return queryset
-"""
-
-class PayperiodAdd(generic.CreateView):
-
-    model = Payperiod
-    fields = ('due')
-    
-    def get_success_url(self):
-        #redirects to edit to add trip end
-        return reverse('mileage:payperiod', kwargs={'pk': self.object.pk})
-
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-        self.object.user = self.request.user
-        self.object.save()
-        return super(PayperiodAdd, self).form_valid(form)
+        try:
+            group = self.request.user.groups.all()[0]
+            user_list = User.objects.filter(groups__name=group)
+        except:
+            pass
+        return super(SupervisorFormView, self).get_queryset().filter(paid=False)
 
 
-#Trip Stuff
-class TripDisplay(
+class TripDisplayView(
     generic.ListView):
     """
     Handles get() for the TripList View.
@@ -100,7 +64,8 @@ class TripDisplay(
         queryset = queryset.order_by('-created')
         return queryset
 
-class TripAdd(
+#Creation View for Staff
+class TripAddView(
     views.FormValidMessageMixin,
     generic.CreateView):
     """
@@ -120,29 +85,7 @@ class TripAdd(
         self.object.save()
         return super(TripAdd, self).form_valid(form)
 
-
-
-class TripAdd(
-    views.FormValidMessageMixin,
-    generic.CreateView):
-    """
-    Handles post() in for the TripList View. Allows addition of trips.
-    """
-    form_valid_message = "Trip Started. Please add an ending mileage."
-    template_name = 'mileage/trip_list.html'
-    model = Trip
-    fields = ('trip_begin', 'description')
-    def get_success_url(self):
-        #redirects to edit to add trip end
-        return reverse('mileage:edit', kwargs={'pk': self.object.pk})
-
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-        self.object.user = self.request.user
-        self.object.save()
-        return super(TripAdd, self).form_valid(form)
-
-class TripList(
+class TripListView(
     views.LoginRequiredMixin,
     generic.View):
     """
@@ -157,7 +100,7 @@ class TripList(
         return view(request, *args, **kwargs)
 
 
-class TripEdit(
+class TripEditView(
     views.FormValidMessageMixin,
     generic.UpdateView):
 

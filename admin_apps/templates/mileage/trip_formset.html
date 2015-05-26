@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<table class="table display">
+    {% for form in formset.forms %}
+        {% if forloop.first %}
+            <thead>
+                {% for field in form.visible_fields %}
+                    <th>{{ field.label }}</th>
+                {% endfor %}    
+            </thead>
+            <tbody>
+        {% endif %}
+
+        <tr class="{% cycle row1,row2 %}">                        
+            {% for field in form.visible_fields %}
+                <td>
+                    {% if forloop.first %}
+                        {% for hidden in form.hidden_fields %}
+                            {{ hidden }}
+                        {% endfor %}
+                    {% endif %}
+
+                    {{ field.errors.as_ul }}
+                    {{ field }}
+                </td>
+            {% endfor %}
+        </tr>
+        {% if forloop.last %}
+            </tbody>
+        {% endif %}
+    {% endfor %}    
+</table>
+
+{% endblock %}
