@@ -15,7 +15,7 @@ from django.http import HttpResponse
 from braces import views
 from extra_views import ModelFormSetView
 
-from mileage.forms import TripStartForm, TripEndForm
+from mileage.forms import TripStartForm, TripEndForm, ApproveForm
 
 #uses django-formtools to create a 2 step form using one model
 #need to add logic to save form
@@ -43,6 +43,19 @@ class SupervisorFormView(
     model = Trip
     fields = ('user','trip_begin', 'trip_end','paid','approved')
 
+    def get_current_payperiod(self):
+        periods = Payperiod.objects.all().order_by('due')
+        for period in periods:
+            if period.due < timezone.now().date():
+                period.delete()
+        return periods[0]
+
+    def get_context_data(self, **kwargs):
+        context = super(SupervisorFormView, self).get_context_data(**kwargs)
+        context['form'] = ApproveForm
+        context['current'] = self.get_current_payperiod()
+        return context
+
     def get_queryset(self):
         try:
             group = self.request.user.groups.all()[0]
@@ -51,6 +64,9 @@ class SupervisorFormView(
             pass
         return super(SupervisorFormView, self).get_queryset().filter(paid=False)
 
+    def get_success_url(self):
+        #redirects to edit to add trip end
+        return reverse('mileage:supervisor', kwargs={'pk': self.object.pk})
 
 class TripDisplayView(
     generic.ListView):
@@ -68,7 +84,7 @@ class TripDisplayView(
 
     def get_context_data(self, **kwargs):
         context = super(TripDisplayView, self).get_context_data(**kwargs)
-        context['form'] = TripStartForm
+        context['form'] = ApproveForm
         context['current'] = self.get_current_payperiod()
         return context
 

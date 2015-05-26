@@ -3,12 +3,9 @@
 {% block content %}
 <!-- Adding a Trip Section -->
 <div class="col-md-12">
-    <h2> Add a Trip</h2>
+    
     <h4> Current Pay Period: {{ current }}</h4>
-       <form action="" method="post">{% csrf_token %}
-            {{ form|crispy }}
-            <input type="submit" value="Add" />
-        </form>
+    <a href='/mileage/wizard/'><h2> Add a Trip</h2></a>
 
 <!-- Trip Listing Section -->
     <h2>List of Trips</h2>
@@ -23,6 +20,7 @@
                 <td>Odometer End</td>
                 <td>Description of Trip</td>
                 <td>Amount Owed</td>
+                <td>Approved</td>
                 <td>Paid</td>
             </tr>
         </thead>
@@ -36,8 +34,8 @@
                 <td>{{ trip.trip_end }}</td>
                 <td>{{ trip.description }}</td>
                 <td>${{ trip.get_amount_owed}}</td>
-                <td>{{ trip.paid }}</td>
-            </tr>
+                <td>{{ trip.approved}}</td>
+                <td>{{ trip.paid }}</tr>
         {% endfor %}
         </tbody>
     </table>

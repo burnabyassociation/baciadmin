@@ -63,5 +63,3 @@ class Trip(TimeStampedModel):
             raise ValidationError("Beginning Mileage cannot be a negative number")
         if self.trip_end < 0:
             raise ValidationError("Ending Mileage cannot be a negative number")
-
-    

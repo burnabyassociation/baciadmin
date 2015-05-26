@@ -10,6 +10,9 @@ class TripStartForm(forms.Form):
 class TripEndForm(forms.Form):
     	trip_end = forms.CharField(label="Odometer End")
 
+class ApproveForm(forms.Form):
+    	approved = forms.BooleanField(label="Approved?")
+
 """class PayperiodAddForm(forms.Form):
     class Meta:
         model = Payperiod

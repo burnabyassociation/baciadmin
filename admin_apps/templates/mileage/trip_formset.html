@@ -21,16 +21,21 @@
                             {{ hidden }}
                         {% endfor %}
                     {% endif %}
-
+                    {% if field == 'user' %}
+                        {{ self.request.user }}
+                    {% endif %}
+                    {% if forloop.last %}
+                            {{ field }}
+                    {% endif %}
                     {{ field.errors.as_ul }}
-                    {{ field }}
+                    {{ field.value }}
                 </td>
             {% endfor %}
         </tr>
         {% if forloop.last %}
             </tbody>
         {% endif %}
-    {% endfor %}    
+    {% endfor %}
 </table>
 
 {% endblock %}
