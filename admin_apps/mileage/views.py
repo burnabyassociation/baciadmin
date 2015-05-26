@@ -10,6 +10,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.shortcuts import render_to_response
 from formtools.wizard.views import SessionWizardView
+from django.http import HttpResponse
 
 from braces import views
 from extra_views import ModelFormSetView
@@ -21,9 +22,18 @@ from mileage.forms import TripStartForm, TripEndForm
 class TripWizard(SessionWizardView):
     template_name = 'mileage/trip_wizardform.html'
     form_list = [TripStartForm, TripEndForm]
+    model = Trip
 
     def done(self, form_list, **kwargs):
-        return reverse('mileage:list')
+        instance = Trip()
+        instance.user = self.request.user
+        for form in form_list:
+            for field, value in form.cleaned_data.iteritems():
+                setattr(instance, field, value)
+        instance.save()
+        return render_to_response('mileage/done.html', {
+            'form_data': [form.cleaned_data for form in form_list],
+        })
 
 #uses django-extra-views to create a multiformset
 #need to add logic to bulk save edits
