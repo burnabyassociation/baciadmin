@@ -16,19 +16,19 @@
         <tr class="{% cycle row1,row2 %}">                        
             {% for field in form.visible_fields %}
                 <td>
-                    {% if forloop.first %}
+                    <!--{% if forloop.first %}
                         {% for hidden in form.hidden_fields %}
                             {{ hidden }}
                         {% endfor %}
-                    {% endif %}
-                    {% if field == 'user' %}
-                        {{ self.request.user }}
-                    {% endif %}
-                    {% if forloop.last %}
-                            {{ field }}
-                    {% endif %}
+                    {% endif %}-->
                     {{ field.errors.as_ul }}
-                    {{ field.value }}
+                    {% if forloop.first %}
+                            {{ form.instance.user }}
+                        {% elif forloop.last %}
+                            {{ field }}
+                        {% else %}
+                            {{ field.value }}
+                    {% endif %}
                 </td>
             {% endfor %}
         </tr>
