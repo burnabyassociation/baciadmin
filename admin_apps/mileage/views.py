@@ -16,14 +16,17 @@ from extra_views import ModelFormSetView
 
 from mileage.forms import TripStartForm, TripEndForm
 
+#uses django-formtools to create a 2 step form using one model
+#need to add logic to save form
 class TripWizard(SessionWizardView):
     template_name = 'mileage/trip_wizardform.html'
     form_list = [TripStartForm, TripEndForm]
 
     def done(self, form_list, **kwargs):
-        return render_to_response('done.html', {
-            'form_data': [form.cleaned_data for form in form_list],
-        })
+        return reverse('mileage:list')
+
+#uses django-extra-views to create a multiformset
+#need to add logic to bulk save edits
 class SupervisorFormView(
     ModelFormSetView):
     template_name = "mileage/trip_formset.html"
