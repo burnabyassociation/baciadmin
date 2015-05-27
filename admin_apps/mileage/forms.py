@@ -47,7 +47,7 @@ class TripEndForm(forms.ModelForm):
         super(TripEndForm, self).clean()
         cleaned_data = self.cleaned_data
         trip_data = cleaned_data.get('trip_end')
-        if trip_data < 0:
+        if trip_data < Trip.trip_begin:
             raise ValidationError("Ending Mileage cannot be negative.")
         return cleaned_data
 
