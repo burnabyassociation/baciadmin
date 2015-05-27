@@ -12,10 +12,3 @@ class TripEndForm(forms.Form):
 
 class ApproveForm(forms.Form):
     	approved = forms.BooleanField(label="Approved?")
-
-"""class PayperiodAddForm(forms.Form):
-    class Meta:
-        model = Payperiod
-
-    due = forms.DateField(label="Due")
-"""
