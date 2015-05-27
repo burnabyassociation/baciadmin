@@ -21,6 +21,7 @@
                 <td>Description of Trip</td>
                 <td>Amount Owed</td>
                 <td>Approved</td>
+                <td>Approved By</td>
                 <td>Paid</td>
             </tr>
         </thead>
@@ -35,6 +36,7 @@
                 <td>{{ trip.description }}</td>
                 <td>${{ trip.get_amount_owed}}</td>
                 <td>{{ trip.approved}}</td>
+                <td>{{ trip.approved_by}}</td>
                 <td>{{ trip.paid }}</tr>
         {% endfor %}
         </tbody>

@@ -45,7 +45,7 @@ class SupervisorFormView(
     ModelFormSetView):
     template_name = "mileage/trip_formset.html"
     model = Trip
-    fields = ('user','trip_begin', 'trip_end','paid','approved')
+    fields = ['user','created','trip_begin','trip_end','paid','approved']
 
     def get_current_payperiod(self):
         periods = Payperiod.objects.all().order_by('due')
@@ -63,7 +63,7 @@ class SupervisorFormView(
     def get_queryset(self):
         try:
             group = self.request.user.groups.all()[0]
-            user_list = User.objects.filter(groups__name=group)
+            return super(SupervisorFormView, self).get_queryset().filter(user__groups__name__in=[group]).filter(paid=False)
         except:
             pass
         return super(SupervisorFormView, self).get_queryset().filter(paid=False)

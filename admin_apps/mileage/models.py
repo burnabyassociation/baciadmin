@@ -5,13 +5,15 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 
+import datetime
+
 # Create your models here.
 class TimeStampedModel(models.Model):
     """
     An abstract base class model that provides self-updating
     ``created`` and ``modified`` fields.
     """
-    created = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(default=datetime.datetime.now, editable=True)
     modified = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -43,6 +45,7 @@ class Trip(TimeStampedModel):
     description = models.TextField(blank=False)
     paid = models.BooleanField(default=False)
     approved = models.BooleanField(default=False)
+    approved_by = models.CharField(blank=True, default='', max_length=30)
 
     def __unicode__(self):
         return self.description
