@@ -8,7 +8,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from mileage.models import Trip, Payperiod
 from django.utils import timezone
 from django.contrib.auth.models import User
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, redirect
 from formtools.wizard.views import SessionWizardView
 from django.http import HttpResponse
 
@@ -24,6 +24,12 @@ class TripWizard(SessionWizardView):
     form_list = [TripStartForm, TripEndForm]
     model = Trip
 
+    def get_form_initial(self, step):
+        if step == '1':
+            data = self.get_cleaned_data_for_step('0') or {}
+            return data
+        return self.initial_dict.get(step, {})
+
     def done(self, form_list, **kwargs):
         instance = Trip()
         instance.user = self.request.user
@@ -31,9 +37,7 @@ class TripWizard(SessionWizardView):
             for field, value in form.cleaned_data.iteritems():
                 setattr(instance, field, value)
         instance.save()
-        return render_to_response('mileage/done.html', {
-            'form_data': [form.cleaned_data for form in form_list],
-        })
+        return redirect('mileage:list')
 
 #uses django-extra-views to create a multiformset
 #need to add logic to bulk save edits
