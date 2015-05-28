@@ -3,18 +3,19 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.views import generic
 from django.views.generic import detail
+from django.db.models import Sum
 from django.views.generic import ListView
 from django.views.generic.edit import CreateView, UpdateView
-from mileage.models import Trip, Payperiod
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.shortcuts import render_to_response, redirect
-from formtools.wizard.views import SessionWizardView
 from django.http import HttpResponse
 
 from braces import views
 from extra_views import ModelFormSetView
+from formtools.wizard.views import SessionWizardView
 
+from mileage.models import Trip, Payperiod
 from mileage.forms import TripStartForm, TripEndForm, ApproveForm
 
 #uses django-formtools to create a 2 step form using one model
@@ -38,6 +39,17 @@ class TripWizard(SessionWizardView):
                 setattr(instance, field, value)
         instance.save()
         return redirect('mileage:list')
+
+class SupervisorListView(
+    generic.TemplateView):
+
+    template_name = "mileage/supervisor.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super(SupervisorListView, self).get_context_data(**kwargs)
+        staff_list = User.objects.annotate(reimbursement=Sum('trip__trip_begin'))
+        context['staff_list'] = staff_list
+        return context
 
 #uses django-extra-views to create a multiformset
 #need to add logic to bulk save edits
@@ -75,7 +87,7 @@ class SupervisorFormView(
 class TripDisplayView(
     generic.ListView):
     """
-    Handles get() for the TripList View.
+    Handles get() for the TripList View.`
     """
     model = Trip
 
