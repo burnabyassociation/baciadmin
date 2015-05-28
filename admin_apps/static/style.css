@@ -1,0 +1,11 @@
+.content {
+    position:relative;
+}
+.info-bar {
+    background-color: #e1e1e1;
+    width: 100%;
+    padding-top:50px;
+    position:relative;
+    right: 0;
+    left: 0;
+}

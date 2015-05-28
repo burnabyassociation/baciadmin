@@ -9,4 +9,5 @@ urlpatterns = patterns ('',
     #url(r'^d/(?P<pk>\d+)/$', views.TripDetail.as_view(), name='detail'),
     url(r'^supervisor/$', views.SupervisorFormView.as_view(), name="sup-list"),
     url(r'^wizard/$', views.TripWizard.as_view(), name="wizard"),
+    url(r'^sups/$', views.SupervisorListView.as_view(), name='sups'),
     )
