@@ -4,8 +4,10 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from django.db.models import Sum
 
 import datetime
+
 
 # Create your models here.
 class TimeStampedModel(models.Model):
@@ -46,12 +48,22 @@ class Trip(TimeStampedModel):
     paid = models.BooleanField(default=False)
     approved = models.BooleanField(default=False)
     approved_by = models.CharField(blank=True, default='', max_length=30)
+    amount_owed = models.IntegerField(blank=True,default=False)
 
     def __unicode__(self):
         return self.description
 
+    def save(self, *args, **kwargs):
+        self.amount_owed = (self.trip_begin - self.trip_end)*0.45
+        super(Trip, self).save(*args, **kwargs)
+
+    #def get_total_amount_owed(self):
+     #   total = Trip.objects.filter(user=self.user).aggregate(total=Sum('amount_owed'))
+      #  return total
+
     def get_amount_owed(self):
         total_kms = self.trip_end - self.trip_begin
+        self.amount_owed = total_kms*(0.45)
         return total_kms*(0.45)
 
     def get_amount_owed_string(self):

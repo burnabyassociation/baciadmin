@@ -43,20 +43,14 @@ class TripEndForm(forms.ModelForm):
                 Submit('add', 'Add', css_class='btn-primary')
                 )
             )
+
     def clean(self):
         super(TripEndForm, self).clean()
         cleaned_data = self.cleaned_data
-<<<<<<< HEAD
-        trip_data = cleaned_data.get('trip_end')
-        if trip_data < Trip.trip_begin:
-=======
         trip_begin = cleaned_data.get('trip_begin')
         trip_end = cleaned_data.get('trip_end')
         if trip_end < 0:
->>>>>>> fb7ca45f3fd6bf4d332e03a264012fd687928586
             raise ValidationError("Ending Mileage cannot be negative.")
-        if trip_begin < trip_end:
-            raise ValidationError("Ending Mileage cannot be less than Beginning Mileage")
         return cleaned_data
 
     class Meta:

@@ -16,6 +16,8 @@ from braces import views
 from extra_views import ModelFormSetView
 
 from mileage.forms import TripStartForm, TripEndForm, ApproveForm
+from adapters import get_total_amount_owed
+
 
 #uses django-formtools to create a 2 step form using one model
 #need to add logic to save form
@@ -54,9 +56,22 @@ class SupervisorFormView(
                 period.delete()
         return periods[0]
 
+#    def get_total_amount_owed(self):
+ #       total = .aggregate(total=Sum('amount_owed'))
+  #      return total
+
     def get_context_data(self, **kwargs):
         context = super(SupervisorFormView, self).get_context_data(**kwargs)
+
+        group = self.request.user.groups.all()[0]
+        users = User.objects.all().filter(groups__name__in=[group])
+        total_reimbursements = []
+        for user in users:
+            total_reimbursements.append(get_total_amount_owed(user))
+
         context['form'] = ApproveForm
+        context['user_list'] = users
+        context['reimbursements'] = total_reimbursements
         context['current'] = self.get_current_payperiod()
         return context
 
@@ -66,7 +81,7 @@ class SupervisorFormView(
             return super(SupervisorFormView, self).get_queryset().filter(user__groups__name__in=[group]).filter(paid=False)
         except:
             pass
-        return super(SupervisorFormView, self).get_queryset().filter(paid=False)
+        return super(SupervisorFormView, self).get_queryset().filter(paid=False).order_by('user').distinct('user')
 
     def get_success_url(self):
         #redirects to edit to add trip end

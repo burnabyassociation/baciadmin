@@ -2,40 +2,27 @@
 {% load crispy_forms_tags %}
 {% block content %}
 
-<table class="table display">
-    {% for form in formset.forms %}
-        {% if forloop.first %}
-            <thead>
-                {% for field in form.visible_fields %}
-                    <th>{{ field.label }}</th>
-                {% endfor %}    
-            </thead>
-            <tbody>
-        {% endif %}
-
-        <tr class="{% cycle row1,row2 %}">                        
-            {% for field in form.visible_fields %}
-                <td>
-                    <!--{% if forloop.first %}
-                        {% for hidden in form.hidden_fields %}
-                            {{ hidden }}
-                        {% endfor %}
-                    {% endif %}-->
-                    {{ field.errors.as_ul }}
-                    {% if forloop.first %}
-                            {{ form.instance.user }}
-                        {% elif forloop.last %}
-                            {{ field }}
-                        {% else %}
-                            {{ field.value }}
-                    {% endif %}
-                </td>
-            {% endfor %}
-        </tr>
-        {% if forloop.last %}
-            </tbody>
-        {% endif %}
-    {% endfor %}
-</table>
+    <table class="table display" id="tripTable" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <td>User</td>
+                <td>Total Amount</td>
+                <td>Approve</td>
+            </tr>
+        </thead>
+        <tbody>
+        
+        {% for user in user_list %}
+            <tr>
+                <td>{{ user }}</td>
+            </tr>
+        {% endfor %}
+        {% for reimbursement in reimbursements %}
+            <tr>
+                <td>{{ reimbursement.total }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 
 {% endblock %}

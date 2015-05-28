@@ -2,6 +2,9 @@
 
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from django.http import Http404
+from django.contrib.auth.models import User
+from mileage.models import Trip
+from django.db.models import Sum
 
 class BACISocialAccountAdapter(DefaultSocialAccountAdapter):
 	def populate_user(self, request, sociallogin, data):
@@ -12,3 +15,7 @@ class BACISocialAccountAdapter(DefaultSocialAccountAdapter):
 			
 		user = super(BACISocialAccountAdapter, self).populate_user(request, sociallogin, data)
 		return user
+
+def get_total_amount_owed(User):
+		total = Trip.objects.filter(user=User).aggregate(total=Sum('amount_owed'))
+   		return total
