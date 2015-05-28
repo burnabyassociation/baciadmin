@@ -1,4 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+    <table class="table display" id="tripTable" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <td>User</td>
+                <td>Total Reimbursement</td>
+            </tr>
+        </thead>
+        <tbody>
+        
+        {% for staff in staff_list %}
+            <tr>
+                <td><a href="{% url 'mileage:user' %}">{{ staff }}</a></td>
+                <td>{{ staff.reimbursement }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
 {% endblock %}

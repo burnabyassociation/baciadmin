@@ -55,6 +55,12 @@ class SupervisorListView(
 
 #uses django-extra-views to create a multiformset
 #need to add logic to bulk save edits
+class UserListView(generic.ListView):
+    template_name = "mileage/user_list.html"
+    model = Trip
+    fields = ['user','created','trip_begin','trip_end','paid','approved']
+
+
 class SupervisorFormView(
     ModelFormSetView):
     template_name = "mileage/trip_formset.html"
