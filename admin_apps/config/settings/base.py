@@ -22,7 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = ')b$=nw6-v652r7#m5m92&u6$=c3umck(n^lst3l&o6so423zv!'
 
 ALLOWED_HOSTS = []
-SITE_ID = 1
+SITE_ID = 2
 
 # Application definition
 
@@ -111,7 +111,9 @@ USE_L10N = True
 
 USE_TZ = True
 
-
+# LOGIN STUFF
+LOGIN_URL = '/accounts/google/login/'
+LOGIN_REDIRECT_URL = '/mileage/'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 

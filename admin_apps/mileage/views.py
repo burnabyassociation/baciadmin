@@ -12,12 +12,12 @@ from django.shortcuts import render_to_response, redirect
 from django.http import HttpResponse
 
 from braces import views
-from extra_views import ModelFormSetView
+from extra_views import ModelFormSetView, InlineFormSetView
 from formtools.wizard.views import SessionWizardView
 
-from mileage.models import Trip, Payperiod
+from mileage.models import Trip, Payperiod, StaffProfile
 from mileage.forms import TripStartForm, TripEndForm, ApproveForm
-from adapters import get_total_amount_owed
+from adapters import get_total_amount_owed, get_current_payperiod
 
 
 #uses django-formtools to create a 2 step form using one model
@@ -42,16 +42,33 @@ class TripWizard(SessionWizardView):
         instance.save()
         return redirect('mileage:list')
 
-class SupervisorListView(
+class SupervisorDashboardView(
     generic.TemplateView):
 
-    template_name = "mileage/supervisor.html"
+    template_name = "mileage/dashboard.html"
     
     def get_context_data(self, **kwargs):
-        context = super(SupervisorListView, self).get_context_data(**kwargs)
-        staff_list = User.objects.annotate(reimbursement=Sum('trip__trip_begin'))
+        context = super(SupervisorDashboardView, self).get_context_data(**kwargs)
+        try:
+            group = self.request.user.groups.all()[0]
+            staff_list = User.objects.filter(groups__name__in=[group]).filter(trip__approved=False)
+            staff_list = staff_list.annotate(reimbursement=Sum('trip__amount_owed')).annotate(total_mileage=Sum('trip__distance'))
+        except:
+            staff_list = []
         context['staff_list'] = staff_list
+        context['current'] = get_current_payperiod()
         return context
+
+class StaffDetailView(
+    generic.DetailView):
+    model = User
+
+class StaffReimbursementView(
+    InlineFormSetView):
+    model = StaffProfile
+    inline_model = Trip
+    
+    template_name = "mileage/user.html"
 
 #uses django-extra-views to create a multiformset
 #need to add logic to bulk save edits
@@ -66,13 +83,6 @@ class SupervisorFormView(
     template_name = "mileage/trip_formset.html"
     model = Trip
     fields = ['user','created','trip_begin','trip_end','paid','approved']
-
-    def get_current_payperiod(self):
-        periods = Payperiod.objects.all().order_by('due')
-        for period in periods:
-            if period.due < timezone.now().date():
-                period.delete()
-        return periods[0]
 
 #    def get_total_amount_owed(self):
  #       total = .aggregate(total=Sum('amount_owed'))
@@ -90,7 +100,7 @@ class SupervisorFormView(
         context['form'] = ApproveForm
         context['user_list'] = users
         context['reimbursements'] = total_reimbursements
-        context['current'] = self.get_current_payperiod()
+        context['current'] = get_current_payperiod()
         return context
 
     def get_queryset(self):

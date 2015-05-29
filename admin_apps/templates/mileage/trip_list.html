@@ -23,10 +23,12 @@
                 <td>Date</td>
                 <td>Odometer Start</td>
                 <td>Odometer End</td>
+                <td>Distance Travelled</td>
                 <td>Description of Trip</td>
                 <td>Amount Owed</td>
                 <td>Approved</td>
                 <td>Approved By</td>
+
                 <td>Paid</td>
             </tr>
         </thead>
@@ -38,6 +40,7 @@
                 <td>{{ trip.created|date:"d/m/y f A" }}</td>
                 <td>{{ trip.trip_begin }}</td>
                 <td>{{ trip.trip_end }}</td>
+                <td>{{ trip.distance }} kms</td>
                 <td>{{ trip.description }}</td>
                 <td>${{ trip.amount_owed}}</td>
                 <td>{{ trip.approved}}</td>

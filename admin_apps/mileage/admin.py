@@ -1,5 +1,5 @@
 from django.contrib import admin
-from mileage.models import Trip, Payperiod
+from mileage.models import Trip, Payperiod, StaffProfile
 
 class TripAdmin(admin.ModelAdmin):
 
@@ -29,5 +29,9 @@ class PayperiodAdmin(admin.ModelAdmin):
     model = Payperiod
     list_display= ('due','created')
 
+class ProfileAdmin(admin.ModelAdmin):
+    model = StaffProfile
+
+admin.site.register(StaffProfile, ProfileAdmin)
 admin.site.register(Trip, TripAdmin)
 admin.site.register(Payperiod, PayperiodAdmin)

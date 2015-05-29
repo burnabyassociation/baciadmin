@@ -21,8 +21,19 @@ class TimeStampedModel(models.Model):
     class Meta:
         abstract = True
 
+class StaffProfile(models.Model):
+    user = models.OneToOneField(User)
+    slug = models.SlugField(max_length=255, blank=True)
+
+    def save(self, *args, **kwargs):
+        slugname = self.user.first_name + self.user.last_name
+        self.slug = slugify(slugname)
+        super(StaffProfile, self).save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('mileage:staff', kwargs={'slug': self.slug})
+
 class Payperiod(TimeStampedModel):
-    #user = models.ForeignKey(User, default=0)
     due = models.DateField(blank=False)
 
     def __unicode__(self):
@@ -49,17 +60,15 @@ class Trip(TimeStampedModel):
     approved = models.BooleanField(default=False)
     approved_by = models.CharField(blank=True, default='', max_length=30)
     amount_owed = models.IntegerField(blank=True,default=False)
+    distance = models.IntegerField(blank=True, default=False)
 
     def __unicode__(self):
         return self.description
 
     def save(self, *args, **kwargs):
-        self.amount_owed = (self.trip_begin - self.trip_end)*0.45
+        self.amount_owed = (self.trip_end - self.trip_begin)*0.45
+        self.distance = (self.trip_end - self.trip_begin)
         super(Trip, self).save(*args, **kwargs)
-
-    #def get_total_amount_owed(self):
-     #   total = Trip.objects.filter(user=self.user).aggregate(total=Sum('amount_owed'))
-      #  return total
 
     def get_amount_owed(self):
         total_kms = self.trip_end - self.trip_begin

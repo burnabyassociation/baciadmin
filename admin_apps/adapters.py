@@ -3,8 +3,10 @@
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from django.http import Http404
 from django.contrib.auth.models import User
-from mileage.models import Trip
+from mileage.models import Trip, Payperiod
 from django.db.models import Sum
+from django.utils import timezone
+
 
 class BACISocialAccountAdapter(DefaultSocialAccountAdapter):
 	def populate_user(self, request, sociallogin, data):
@@ -19,3 +21,10 @@ class BACISocialAccountAdapter(DefaultSocialAccountAdapter):
 def get_total_amount_owed(User):
 		total = Trip.objects.filter(user=User).aggregate(total=Sum('amount_owed'))
    		return total
+
+def get_current_payperiod():
+        periods = Payperiod.objects.all().order_by('due')
+        for period in periods:
+            if period.due < timezone.now().date():
+                period.delete()
+        return periods[0]
