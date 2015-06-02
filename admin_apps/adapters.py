@@ -24,7 +24,8 @@ def get_total_amount_owed(User):
 
 def get_current_payperiod():
         periods = Payperiod.objects.all().order_by('due')
-        for period in periods:
-            if period.due < timezone.now().date():
-                period.delete()
-        return periods[0]
+        if periods.exists():
+	        for period in periods:
+	            if period.due < timezone.now().date():
+	                period.delete()
+	        return periods[0]

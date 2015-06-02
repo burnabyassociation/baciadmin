@@ -122,17 +122,10 @@ class TripDisplayView(
     """
     model = Trip
 
-    def get_current_payperiod(self):
-        periods = Payperiod.objects.all().order_by('due')
-        for period in periods:
-            if period.due < timezone.now().date():
-                period.delete()
-        return periods[0]
-
     def get_context_data(self, **kwargs):
         context = super(TripDisplayView, self).get_context_data(**kwargs)
         context['form'] = ApproveForm
-        context['current'] = self.get_current_payperiod()
+        context['current'] = get_current_payperiod()
         return context
 
     def get_queryset(self):
