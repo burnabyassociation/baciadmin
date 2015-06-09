@@ -113,7 +113,7 @@ USE_TZ = True
 
 # LOGIN STUFF
 LOGIN_URL = '/accounts/google/login/'
-LOGIN_REDIRECT_URL = '/mileage/'
+LOGIN_REDIRECT_URL = '/'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 

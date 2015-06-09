@@ -1,11 +1,13 @@
 # mileage.models.py
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.db.models import Sum
-
+from django.db.models.signals import post_save
+from django.utils.text import slugify
 import datetime
 
 
@@ -21,14 +23,16 @@ class TimeStampedModel(models.Model):
     class Meta:
         abstract = True
 
-class StaffProfile(models.Model):
-    user = models.OneToOneField(User)
+class Staff(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL)
     slug = models.SlugField(max_length=255, blank=True)
 
+    def __unicode__(self):
+        return unicode(self.user)
+
     def save(self, *args, **kwargs):
-        slugname = self.user.first_name + self.user.last_name
-        self.slug = slugify(slugname)
-        super(StaffProfile, self).save(*args, **kwargs)
+        self.slug = slugify(unicode(self.user))
+        super(Staff, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('mileage:staff', kwargs={'slug': self.slug})
@@ -52,7 +56,7 @@ class Trip(TimeStampedModel):
     Staff will track a trip by it's odometer. They will record the beginning
     and the end of the odometer.
     """
-    user = models.ForeignKey(User)
+    staff = models.ForeignKey(Staff)
     trip_begin = models.IntegerField(blank=False)
     trip_end = models.IntegerField(default=0)
     description = models.TextField(blank=False)
@@ -81,3 +85,9 @@ class Trip(TimeStampedModel):
 
     def get_absolute_url(self):
         return reverse('mileage:detail', kwargs={'pk': self.id})
+
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Staff.objects.create(user=instance)
+
+post_save.connect(create_user_profile, sender=User)

@@ -8,6 +8,7 @@ from django.views.generic import ListView
 from django.views.generic.edit import CreateView, UpdateView
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import render_to_response, redirect
 from django.http import HttpResponse
 
@@ -15,17 +16,20 @@ from braces import views
 from extra_views import ModelFormSetView, InlineFormSetView
 from formtools.wizard.views import SessionWizardView
 
-from mileage.models import Trip, Payperiod, StaffProfile
+from mileage.models import Trip, Payperiod, Staff
 from mileage.forms import TripStartForm, TripEndForm, ApproveForm
 from adapters import get_total_amount_owed, get_current_payperiod
 
 
 #uses django-formtools to create a 2 step form using one model
 #need to add logic to save form
-class TripWizard(SessionWizardView):
+class TripWizard(views.LoginRequiredMixin,
+    SuccessMessageMixin,
+    SessionWizardView):
     template_name = 'mileage/trip_wizardform.html'
     form_list = [TripStartForm, TripEndForm]
     model = Trip
+    success_message = (u"Trip reimbursement was added!")
 
     def get_form_initial(self, step):
         if step == '1':
@@ -35,7 +39,7 @@ class TripWizard(SessionWizardView):
 
     def done(self, form_list, **kwargs):
         instance = Trip()
-        instance.user = self.request.user
+        instance.staff = self.request.user.staff
         for form in form_list:
             for field, value in form.cleaned_data.iteritems():
                 setattr(instance, field, value)
@@ -44,31 +48,32 @@ class TripWizard(SessionWizardView):
 
 class SupervisorDashboardView(
     generic.TemplateView):
-
     template_name = "mileage/dashboard.html"
     
     def get_context_data(self, **kwargs):
         context = super(SupervisorDashboardView, self).get_context_data(**kwargs)
         try:
             group = self.request.user.groups.all()[0]
-            staff_list = User.objects.filter(groups__name__in=[group]).filter(trip__approved=False)
-            staff_list = staff_list.annotate(reimbursement=Sum('trip__amount_owed')).annotate(total_mileage=Sum('trip__distance'))
+            user_list = User.objects.filter(groups__name__in=[group]).filter(staff__trip__approved=False)
+            user_list = user_list.annotate(reimbursement=Sum('staff__trip__amount_owed')).annotate(total_mileage=Sum('staff__trip__distance'))
         except:
-            staff_list = []
-        context['staff_list'] = staff_list
+            user_list = []
+        context['user_list'] = user_list
         context['current'] = get_current_payperiod()
         return context
 
 class StaffDetailView(
     generic.DetailView):
-    model = User
+    model = Staff
 
 class StaffReimbursementView(
     InlineFormSetView):
-    model = StaffProfile
+    model = Staff
     inline_model = Trip
+    extra = 0
+    fields= ('trip_begin','trip_end','description','trip_begin','trip_end','paid','approved',)
     
-    template_name = "mileage/user.html"
+    template_name = "mileage/staff_detail.html"
 
 #uses django-extra-views to create a multiformset
 #need to add logic to bulk save edits

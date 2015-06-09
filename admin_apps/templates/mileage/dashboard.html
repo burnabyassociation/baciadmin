@@ -21,11 +21,11 @@
         </thead>
         <tbody>
         
-        {% for staff in staff_list %}
+        {% for user in user_list %}
             <tr>
-                <td><a href="{{staff.staffprofile.get_absolute_url}}">{{ staff.first_name}} {{staff.last_name}}</a></td>
-                <td>${{ staff.reimbursement }}</td>
-                <td>{{ staff.total_mileage }}</td>
+                <td><a href="{{user.staff.get_absolute_url}}">{{ user.first_name}} {{user.last_name}}</a></td>
+                <td>${{ user.reimbursement }}</td>
+                <td>{{ user.total_mileage }}</td>
             </tr>
         {% endfor %}
         </tbody>
