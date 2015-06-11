@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.db.models import Sum
 from django.db.models.signals import post_save
 from django.utils.text import slugify
+
 import datetime
 
 
@@ -35,7 +36,7 @@ class Staff(models.Model):
         super(Staff, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse('mileage:staff', kwargs={'slug': self.slug})
+        return reverse('mileage:profile', kwargs={'pk': self.pk})
 
 class Payperiod(TimeStampedModel):
     due = models.DateField(blank=False)
@@ -62,7 +63,6 @@ class Trip(TimeStampedModel):
     description = models.TextField(blank=False)
     paid = models.BooleanField(default=False)
     approved = models.BooleanField(default=False)
-    approved_by = models.CharField(blank=True, default='', max_length=30)
     amount_owed = models.IntegerField(blank=True,default=False)
     distance = models.IntegerField(blank=True, default=False)
 
@@ -85,6 +85,13 @@ class Trip(TimeStampedModel):
 
     def get_absolute_url(self):
         return reverse('mileage:detail', kwargs={'pk': self.id})
+
+    def get_approve_url(self):
+        pass
+    def get_delete_url(self):
+        pass
+    def get_paid_url(self):
+        pass
 
 def create_user_profile(sender, instance, created, **kwargs):
     if created:

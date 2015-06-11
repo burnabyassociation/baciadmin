@@ -9,20 +9,42 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.contrib.messages.views import SuccessMessageMixin
-from django.shortcuts import render_to_response, redirect
-from django.http import HttpResponse
+from django.shortcuts import render, render_to_response, redirect
+from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib import messages
+from django.forms.models import inlineformset_factory
+from django.forms.formsets import formset_factory
 
 from braces import views
 from extra_views import ModelFormSetView, InlineFormSetView
 from formtools.wizard.views import SessionWizardView
 
 from mileage.models import Trip, Payperiod, Staff
-from mileage.forms import TripStartForm, TripEndForm, ApproveForm
-from adapters import get_total_amount_owed, get_current_payperiod
+from mileage.forms import TripFormHelper, TripFormSet, TripForm, TripStartForm, TripEndForm, StaffTripFormSetHelper, StaffForm
+from adapters import FormsetMixin, RequiredInlineFormSet, get_total_amount_owed, get_current_payperiod
 
 
-#uses django-formtools to create a 2 step form using one model
-#need to add logic to save form
+#This is the user profile view that supervisors and admin access to approve/pay localhost/1/edit
+class StaffView(FormsetMixin, UpdateView):
+    template_name = 'mileage/staff.html'
+    is_update_view = True
+    model = Staff
+    form_class = StaffForm
+    formset_class = TripFormSet
+
+    def get_formset_kwargs(self):
+        kwargs = super(StaffView, self).get_formset_kwargs()
+        if 'admins' in self.request.user.groups.values_list('name', flat=True):
+            kwargs['queryset'] = Trip.objects.filter(staff=self.object, paid=False, approved=True)
+        else:
+            kwargs['queryset'] = Trip.objects.filter(staff=self.object, paid=False, approved=False)
+        return kwargs
+    def get_context_data(self, **kwargs):
+        context = super(StaffView, self).get_context_data(**kwargs)
+        context['helper'] = TripFormHelper()
+        return context
+
+#This is the staff's add trip view
 class TripWizard(views.LoginRequiredMixin,
     SuccessMessageMixin,
     SessionWizardView):
@@ -46,6 +68,7 @@ class TripWizard(views.LoginRequiredMixin,
         instance.save()
         return redirect('mileage:list')
 
+#this is the supervisor dashbaord view
 class SupervisorDashboardView(
     generic.TemplateView):
     template_name = "mileage/dashboard.html"
@@ -62,64 +85,7 @@ class SupervisorDashboardView(
         context['current'] = get_current_payperiod()
         return context
 
-class StaffDetailView(
-    generic.DetailView):
-    model = Staff
-
-class StaffReimbursementView(
-    InlineFormSetView):
-    model = Staff
-    inline_model = Trip
-    extra = 0
-    fields= ('trip_begin','trip_end','description','trip_begin','trip_end','paid','approved',)
-    
-    template_name = "mileage/staff_detail.html"
-
-#uses django-extra-views to create a multiformset
-#need to add logic to bulk save edits
-class UserListView(generic.ListView):
-    template_name = "mileage/user_list.html"
-    model = Trip
-    fields = ['user','created','trip_begin','trip_end','paid','approved']
-
-
-class SupervisorFormView(
-    ModelFormSetView):
-    template_name = "mileage/trip_formset.html"
-    model = Trip
-    fields = ['user','created','trip_begin','trip_end','paid','approved']
-
-#    def get_total_amount_owed(self):
- #       total = .aggregate(total=Sum('amount_owed'))
-  #      return total
-
-    def get_context_data(self, **kwargs):
-        context = super(SupervisorFormView, self).get_context_data(**kwargs)
-
-        group = self.request.user.groups.all()[0]
-        users = User.objects.all().filter(groups__name__in=[group])
-        total_reimbursements = []
-        for user in users:
-            total_reimbursements.append(get_total_amount_owed(user))
-
-        context['form'] = ApproveForm
-        context['user_list'] = users
-        context['reimbursements'] = total_reimbursements
-        context['current'] = get_current_payperiod()
-        return context
-
-    def get_queryset(self):
-        try:
-            group = self.request.user.groups.all()[0]
-            return super(SupervisorFormView, self).get_queryset().filter(user__groups__name__in=[group]).filter(paid=False)
-        except:
-            pass
-        return super(SupervisorFormView, self).get_queryset().filter(paid=False).order_by('user').distinct('user')
-
-    def get_success_url(self):
-        #redirects to edit to add trip end
-        return reverse('mileage:supervisor', kwargs={'pk': self.object.pk})
-
+#This is the generic list view
 class TripDisplayView(
     generic.ListView):
     """
@@ -129,7 +95,6 @@ class TripDisplayView(
 
     def get_context_data(self, **kwargs):
         context = super(TripDisplayView, self).get_context_data(**kwargs)
-        context['form'] = ApproveForm
         context['current'] = get_current_payperiod()
         return context
 
@@ -172,17 +137,4 @@ class TripListView(
     def post(self, request, *args, **kwargs):
         view = TripAddView.as_view()
         return view(request, *args, **kwargs)
-
-
-class TripEditView(
-    views.FormValidMessageMixin,
-    generic.UpdateView):
-
-    form_valid_message = "Trip Reimbursement Added."
-    template_name = 'mileage/trip_edit.html'
-    model = Trip
-    fields = ['trip_end']
-    def get_success_url(self):
-        return reverse('mileage:list')
-        
 

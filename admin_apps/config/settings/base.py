@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'mileage',
     'crispy_forms',
     'formtools',
+    'bootstrapform',
 )
 
 MIDDLEWARE_CLASSES = (
