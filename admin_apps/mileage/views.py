@@ -3,17 +3,18 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.views import generic
 from django.views.generic import detail
-from django.db.models import Sum
+from django.db.models import Sum, Count, Max, Min
 from django.views.generic import ListView
 from django.views.generic.edit import CreateView, UpdateView
 from django.utils import timezone
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import render, render_to_response, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
 from django.forms.models import inlineformset_factory
 from django.forms.formsets import formset_factory
+
 
 from braces import views
 from extra_views import ModelFormSetView, InlineFormSetView
@@ -42,6 +43,13 @@ class StaffView(FormsetMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super(StaffView, self).get_context_data(**kwargs)
         context['helper'] = TripFormHelper()
+        context['approved_trips'] = Trip.objects.filter(staff=self.object, approved=True)
+        context['current'] = get_current_payperiod()
+        try:
+            context['supervisor'] = Group.objects.get(name='Supervisors')
+            context['admin'] = Group.objects.get(name='Admins')
+        except:
+            pass
         return context
 
 #This is the staff's add trip view
@@ -53,6 +61,7 @@ class TripWizard(views.LoginRequiredMixin,
     model = Trip
     success_message = (u"Trip reimbursement was added!")
 
+    
     def get_form_initial(self, step):
         if step == '1':
             data = self.get_cleaned_data_for_step('0') or {}
@@ -66,7 +75,7 @@ class TripWizard(views.LoginRequiredMixin,
             for field, value in form.cleaned_data.iteritems():
                 setattr(instance, field, value)
         instance.save()
-        return redirect('mileage:list')
+        return redirect('mileage:profile', kwargs={'pk': self.request.user.staff.pk})
 
 #this is the supervisor dashbaord view
 class SupervisorDashboardView(
@@ -78,7 +87,11 @@ class SupervisorDashboardView(
         try:
             group = self.request.user.groups.all()[0]
             user_list = User.objects.filter(groups__name__in=[group]).filter(staff__trip__approved=False)
-            user_list = user_list.annotate(reimbursement=Sum('staff__trip__amount_owed')).annotate(total_mileage=Sum('staff__trip__distance'))
+            user_list = user_list.annotate(reimbursement=Sum('staff__trip__amount_owed')) #total amount owed
+            user_list = user_list.annotate(total_mileage=Sum('staff__trip__distance')) #total distance travelled
+            user_list  = user_list.annotate(num_trips=Count('staff__trip')) #total amount of reimbursements
+            user_list = user_list.annotate(oldest_trip=Min('staff__trip__created'))
+            user_list = user_list.annotate(newest_trip=Max('staff__trip__created'))
         except:
             user_list = []
         context['user_list'] = user_list
@@ -92,6 +105,7 @@ class TripDisplayView(
     Handles get() for the TripList View.`
     """
     model = Trip
+
 
     def get_context_data(self, **kwargs):
         context = super(TripDisplayView, self).get_context_data(**kwargs)
@@ -116,7 +130,7 @@ class TripAddView(
     fields = ('trip_begin', 'description')
     def get_success_url(self):
         #redirects to edit to add trip end
-        return reverse('mileage:edit', kwargs={'pk': self.object.pk})
+        return reverse('mileage:profile', kwargs={'pk': self.object.pk})
 
     def form_valid(self, form):
         self.object = form.save(commit=False)

@@ -5,42 +5,60 @@
     <title>{% block title %}BACI Mileage{% endblock title %}</title>
     
     <!--Bootstrap and Font Awesome Stuff -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-    <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     </script></script>
-    
-    <!--Jquery Stuff -->
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+
     <!--table stuff-->
     <script src="http://cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"></script>
     <script src="http://cdn.datatables.net/1.10.7/css/jquery.dataTables.css"></script>
+    <script src="{% static "bootstrap-switch.min.js" %}"></script>
 
     <!-- Custom CSS -->
     <link rel="stylesheet" type="text/css" href="{% static "style.css" %}">
-
+    <link rel="stylesheet" type="text/css" href="{% static "bootstrap-switch.min.css" %}">
 </head>
 
 <body>
      <!-- Fixed navbar -->
-    <nav class="navbar navbar-default navbar-fixed-top">
+
+    <nav class="custom-nav navbar navbar-default navbar-fixed-top">
       <div class="container">
-        <div class="navbar-header col-md-12">
+        <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
             <span class="sr-only">Toggle navigation</span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Mileage Application | {{user.username}}</a>
+          <a class="navbar-brand" style="color:#FFF" href="/"><i class="fa fa-car"></i> BACI Mileage Reimbursement</a>
         </div>
-        <div id="navbar" class="navbar-collapse collapse">
-
+        <div id="navbar" class="navbar-collapse collapse navbar-right">
+          <ul class="nav navbar-nav">
+            {% for group in user.groups.all %}
+                {% if group.name == 'supervisor' or 'admin' %}
+                    <li><a href="{% url 'mileage:manage' %}">Manage Reimbursements</a></li>
+                {% endif %}
+            {% endfor %}
+            <li><a href="#help">Help</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user"></i> {{user.email}} <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="#">My Reimbursements</a></li>
+                <li role="separator" class="divider"></li>
+                <li class="dropdown-header">Links</li>
+                <li><a href="#">Back To Email</a></li>
+                <li><a href="#">Settings</a></li>
+              </ul>
+            </li>
+          </ul>
         </div><!--/.nav-collapse -->
       </div>
     </nav>
+
         <div class="info-bar">
-            {% block info %}{% endblock %}
         </div>
         <!---MESSAGES -->
 
