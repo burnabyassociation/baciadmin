@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 <!-- Adding a Trip Section -->
-{% block content %}
-
+{% block info %}
 <div class="page-header">
   <h1> Supervisor: Dashboard</h1>
           <h4> Current Pay Period: <small>{{ current.due }}</small></h4>
 </div>
+{% endblock %}
+{% block content %}
 
     <div class="col-md-12">
     <legend>Staff Reimbursements</legend>

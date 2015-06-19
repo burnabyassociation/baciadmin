@@ -63,7 +63,7 @@ class Trip(TimeStampedModel):
     description = models.TextField(blank=False)
     paid = models.BooleanField(default=False)
     approved = models.BooleanField(default=False)
-    amount_owed = models.DecimalField(max_digits=6, decimal_places=2)
+    amount_owed = models.DecimalField(max_digits=10, decimal_places=2)
     distance = models.IntegerField(blank=True, default=False)
 
     def __unicode__(self):

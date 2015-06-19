@@ -2,8 +2,10 @@
 {% load i18n %}
 
 {% block info %}
-<!-- Adding a Trip Section -->
-
+<div class="page-header">
+  <h1> Add a Reimbursement</h1>
+          <h4> Current Pay Period: <small>{{ current.due }}</small></h4>
+</div>
 {% endblock %}
 
 {% block head %}
@@ -13,7 +15,6 @@
 {% block content %}
 
 <div class="col-md-12">
-    <H1> BACI Mileage Reimbursements {{views_context_var}}</H1>
     <p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
     <br>
 
