@@ -4,13 +4,13 @@
 <div class="page-header">
   <h1> Supervisor: Dashboard</h1>
         <h4> Current Pay Period: <small>
-        {% if currend.due %}
+        {% if current.due %}
             {{ current.due }}
         {% else %}
         No Pay Periods!
         {% endif %}
         </small></h4>
-        
+
         <h4> Your Group: <small> 
         {% if user.groups.all.0 %}
             {{user.groups.all.0}}
