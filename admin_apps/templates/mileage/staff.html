@@ -13,6 +13,16 @@
   <h1> {{object.user.username}}: Reimbursements</h1>
           <h4> Current Pay Period: <small>{{ current.due }}</small></h4>
         <h4> Department: <small>{{ user.groups.all.0 }}</small></h4>
+    <a href="{{ user.staff.get_approve_url }}">
+    <div class="btn btn-default">
+        APPROVE ALL
+    </div>
+</a>
+<a href="{{ user.staff.get_pay_url }}">
+    <div class="btn btn-default">
+        PAY ALL
+    </div>
+</a>
 </div>
 
 <form action="." method="post">
@@ -31,9 +41,6 @@
                 <h1 class="panel-title">{{ form.grouper }}</h1>
             </div>
             <ul class="list group" style="padding:0px;margin:0px">
-            <button onclick="myFunction()">Approve All</button>
-                {{ kwargs.paid }}
-
 
                 {% for form in form.list %}
                 <li class="clearfix list-group-item">
@@ -95,11 +102,5 @@
             {% endfor %}
     </div>
 <script>
-<script>
-function myFunction() {
-    for form in form.list
-        form.paid = true;
-        form.save();
-}
 </script>
 {% endblock %}

@@ -64,13 +64,14 @@ def group_required(*group_names):
 @group_required('admin','supervisor')
 def ApproveView(request, pk):
     trips = Trip.objects.filter(staff=pk, approved=False).update(approved=True)
-    return redirect ('/dashboard')
-
+    messages.success(request, 'All trips approved')
+    return redirect ("mileage:profile", pk=pk)
 
 @group_required('admin')
 def PayView(request, pk):
     trips = Trip.objects.filter(staff=pk, paid=False).update(paid=True)
-    return redirect ('/dashboard')
+    messages.success(request, 'All trips marked as paid pending')
+    return redirect ("mileage:profile", pk=pk)
 
 
 #This is the staff's add trip view

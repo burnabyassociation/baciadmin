@@ -38,6 +38,12 @@ class Staff(models.Model):
     def get_absolute_url(self):
         return reverse('mileage:profile', kwargs={'pk': self.pk})
 
+    def get_approve_url(self):
+        return reverse('mileage:approve', kwargs={'pk': self.pk})
+
+    def get_pay_url(self):
+        return reverse('mileage:pay', kwargs={'pk': self.pk})
+
 class Payperiod(TimeStampedModel):
     due = models.DateField(blank=False)
 
