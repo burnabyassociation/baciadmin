@@ -14,6 +14,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
 from django.forms.models import inlineformset_factory
 from django.forms.formsets import formset_factory
+from django.contrib.auth.decorators import user_passes_test
 
 
 from braces import views
@@ -51,6 +52,26 @@ class StaffView(FormsetMixin, UpdateView):
         except:
             pass
         return context
+
+def group_required(*group_names):
+    def in_groups(u):
+        if u.is_authenticated():
+            if bool(u.groups.filter(name__in=group_names)) | u.is_superuser:
+                return True
+        return False
+    return user_passes_test(in_groups)
+
+@group_required('admin','supervisor')
+def ApproveView(request, pk):
+    trips = Trip.objects.filter(staff=pk, approved=False).update(approved=True)
+    return redirect ('/dashboard')
+
+
+@group_required('admin')
+def PayView(request, pk):
+    trips = Trip.objects.filter(staff=pk, paid=False).update(paid=True)
+    return redirect ('/dashboard')
+
 
 #This is the staff's add trip view
 class TripWizard(views.LoginRequiredMixin,

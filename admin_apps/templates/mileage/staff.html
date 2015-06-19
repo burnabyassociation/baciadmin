@@ -31,6 +31,9 @@
                 <h1 class="panel-title">{{ form.grouper }}</h1>
             </div>
             <ul class="list group" style="padding:0px;margin:0px">
+            <button onclick="myFunction()">Approve All</button>
+                {{ kwargs.paid }}
+
 
                 {% for form in form.list %}
                 <li class="clearfix list-group-item">
@@ -50,7 +53,7 @@
                         </div>
                         {{ form.instance.description }}
                     </div>
-                                        <div class="col-md-3">
+                        <div class="col-md-3">
                         {% if supervisor in user.groups.all %}
                             approved?: {{ form.approved }}
                         {% else %}
@@ -92,5 +95,11 @@
             {% endfor %}
     </div>
 <script>
+<script>
+function myFunction() {
+    for form in form.list
+        form.paid = true;
+        form.save();
+}
 </script>
 {% endblock %}
