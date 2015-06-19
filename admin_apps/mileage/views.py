@@ -54,13 +54,10 @@ class StaffView(FormsetMixin, UpdateView):
 
 #This is the staff's add trip view
 class TripWizard(views.LoginRequiredMixin,
-    SuccessMessageMixin,
     SessionWizardView):
     template_name = 'mileage/trip_wizardform.html'
     form_list = [TripStartForm, TripEndForm]
     model = Trip
-    success_message = (u"Trip reimbursement was added!")
-
     
     def get_form_initial(self, step):
         if step == '1':
@@ -75,7 +72,8 @@ class TripWizard(views.LoginRequiredMixin,
             for field, value in form.cleaned_data.iteritems():
                 setattr(instance, field, value)
         instance.save()
-        return redirect('mileage:profile', kwargs={'pk': self.request.user.staff.pk})
+        messages.success(self.request, 'Reimbursement %s added.' % instance)
+        return redirect('mileage:wizard')
 
 #this is the supervisor dashbaord view
 class SupervisorDashboardView(
