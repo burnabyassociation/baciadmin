@@ -8,21 +8,12 @@
 
 {% endblock %}
 {% block content %}
-
+<div class="container">
 <div class="page-header">
   <h1> {{object.user.username}}: Reimbursements</h1>
           <h4> Current Pay Period: <small>{{ current.due }}</small></h4>
         <h4> Department: <small>{{ user.groups.all.0 }}</small></h4>
-    <a href="{{ user.staff.get_approve_url }}">
-    <div class="btn btn-default">
-        APPROVE ALL
-    </div>
-</a>
-<a href="{{ user.staff.get_pay_url }}">
-    <div class="btn btn-default">
-        PAY ALL
-    </div>
-</a>
+
 </div>
 
 <form action="." method="post">
@@ -31,19 +22,43 @@
     <div class="emptystaff">
         {{ form }}
     </div>
-    <legend>Paid Reimbursements</legend>
+
 
     <div class="tripset col-md-12">
-    {% regroup formset by instance.created.date as form_list %}
+<div style="padding-bottom:5px">
+{% for group in user.groups.all %}
+{% if group.name == 'supervisor' %}
+<a href="{{ user.staff.get_approve_url }}">
+<div class="btn btn-default">
+MARK ALL AS APPROVED
+</div>
+</a>
+{% endif %}
+{% endfor %}
+{% for group in user.groups.all %}
+{% if group.name == 'admin' %}
+<a href="{{ user.staff.get_pay_url }}">
+<div class="btn btn-default">
+MARK ALL AS PAID
+</div>
+</a>
+{% endif %}
+{% endfor %}
+</div>
+    <legend><h4>Applied Reimbursements<small> 
+    {% if applied_distance.distance__sum %}
+    Total Distance Travelled: {{applied_distance.distance__sum}}kms
+    Total Amount Applied: ${{applied_sum.amount_owed__sum}}</small></h4></legend>
+    {% regroup formset|dictsort:"instance.created" by instance.created.date as form_list %}
     {% for form in form_list %}
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h1 class="panel-title">{{ form.grouper }}</h1>
+                <h2 class="panel-title">{{ form.grouper }}</h2>
             </div>
-            <ul class="list group" style="padding:0px;margin:0px">
+            <ul class="list group" style="padding:0px;margin:0px ">
 
                 {% for form in form.list %}
-                <li class="clearfix list-group-item">
+                <li class="clearfix list-group-item" style="word-wrap: break-word;">
                     <div class="col-md-9">
                         {% for hidden in form.hidden_fields %}
                             {{ hidden }}
@@ -55,25 +70,23 @@
                         <div class="hidden">{{ form.description }}</div>
                         <div class="hidden">{{ form.distance }}</div>
                         <div class="hidden">{{ form.amount_owed }}</div>
-                        <div class="row">
+                        <div class="row" style="word-wrap: break-word;">
                             <b>{{ form.instance.distance }}kms</b> and <b> ${{form.instance.amount_owed }}</b>
                         </div>
                         {{ form.instance.description }}
                     </div>
-                        <div class="col-md-3">
-                        {% if supervisor in user.groups.all %}
-                            approved?: {{ form.approved }}
-                        {% else %}
-                            <div class="hidden"> {{form.approved}}</div>
-                            approved?: {{form.instance.approved}}
-                        {% endif %}
 
-                        {% if admin in user.groups.all %}
-                            paid?: {{ form.paid }}
-                        {% else %}
-                            <div class="hidden"> {{ form.paid }}</div>
-                            paid?: {{ form.instance.approved }}
-                        {% endif %}
+                        <div class="col-md-3">
+                        {% for group in user.groups.all %}
+                            {% if group.name == 'supervisor' %}
+                                Approve: {{ form.approved }}
+                            {% endif %}
+                        {% endfor %}
+                        {% for group in user.groups.all %}
+                            {% if group.name == 'admin' %}
+                                Pay: {{ form.paid }}
+                            {% endif %}
+                        {% endfor %}
                     </div>
 
                 </li>
@@ -82,25 +95,84 @@
 
         </div>
     {% endfor %}
-        <div class="pull-right">
-            <button type="submit" class="btn btn-primary">Save</button>
-        </div>
-    </div>
-</form>
-
-    <legend>Approved Reimbursements For this Pay Period<small> Total Distance: Total Reimbursement: </small></legend>
-    <div class="tripset col-md-12">
-            {% for trip in approved_trips %}
-                <div class="row">
-                    <div class="col-md-9">
-                        {{ trip.created }}
-                        {{ trip.description }}
-                        {{ trip.distance }}
-                        {{ trip.amount_owed }}
+           {% for group in user.groups.all %}
+                {% if group.name == 'supervisor' or 'admin' %}
+                    <div class="pull-right">
+                        <button type="submit" class="btn btn-primary">Save</button>
                     </div>
-                </div>
+                {% endif %}
             {% endfor %}
+        {% else %}
+        <h5>No Reimbursements <a href="{% url 'mileage:wizard' %}"><div class="btn btn-default">Add Reimbursement</div></a>
+        </h5>
+        {% endif %}
+
+</form>
+<!--Reimbursements in this pay period -->
+   <legend><h4>Pending Reimbursements<small> 
+    {% if pending_distance.distance__sum %}
+    Total Distance Travelled: {{pending_distance.distance__sum}}kms
+    Total Amount Applied: ${{pending_sum.amount_owed__sum}}</small></h4></legend>
+    {% regroup pending_trips|dictsort:"created" by created.date as pending %}
+    {% for trip in pending %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">{{ trip.grouper }}</h2>
+            </div>
+            <ul class="list group" style="padding:0px;margin:0px ">
+
+                {% for trip in trip.list %}
+                <li class="clearfix list-group-item" style="word-wrap: break-word;">
+                    <div class="col-md-9">
+                    {{ trip.created }}
+                    {{ trip.description }}
+                    ${{ trip.amount_owed }}
+                    {{ trip.dstance }}kms
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+
+        </div>
+        {% endfor %}
+        {% else %}
+        <div>No Approved Reimbursements</div>
+        {% endif %}
+
+<!--Reimbursements History -->
+   <legend><h4>History of Reimbursements<small> 
+    {% if paid_distance.distance__sum %}
+    Total Distance Travelled: {{paid_distance.distance__sum}}kms
+    Total Amount Applied: ${{paid_distance.amount_owed__sum}}</small></h4></legend>
+    {% regroup paid_trips|dictsort:"created" by created.date as paid %}
+    {% for trip in paid %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">{{ trip.grouper }}</h2>
+            </div>
+            <ul class="list group" style="padding:0px;margin:0px ">
+
+                {% for trip in trip.list %}
+                <li class="clearfix list-group-item" style="word-wrap: break-word;">
+                    <div class="col-md-9">
+                    {{ trip.created }}
+                    {{ trip.description }}
+                    ${{ trip.amount_owed }}
+                    {{ trip.dstance }}kms
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+
+        </div>
+        {% endfor %}
+        {% else %}
+        <div>No History</div>
+        {% endif %}
+
+
     </div>
+</div>
 <script>
 </script>
 {% endblock %}

@@ -33,18 +33,35 @@ class StaffView(FormsetMixin, UpdateView):
     model = Staff
     form_class = StaffForm
     formset_class = TripFormSet
+    trips = Trip.objects.all()
 
     def get_formset_kwargs(self):
         kwargs = super(StaffView, self).get_formset_kwargs()
-        if 'admins' in self.request.user.groups.values_list('name', flat=True):
-            kwargs['queryset'] = Trip.objects.filter(staff=self.object, paid=False, approved=True)
-        else:
-            kwargs['queryset'] = Trip.objects.filter(staff=self.object, paid=False, approved=False)
+        kwargs['queryset'] = self.trips.filter(staff=self.object, paid=False, approved=False)
         return kwargs
+
     def get_context_data(self, **kwargs):
         context = super(StaffView, self).get_context_data(**kwargs)
+
+        #Stats for Applied Reimbursements
+        applied_trips = self.trips.filter(staff=self.object, paid=False, approved=False)
+        context['applied_sum'] = applied_trips.aggregate(Sum('amount_owed'))
+        context['applied_distance'] = applied_trips.aggregate(Sum('distance'))
+
+        #Stats for Pending Reimbursements
+        pending_trips = self.trips.filter(staff=self.object, paid=False, approved=True)
+        context['pending_trips'] = pending_trips
+        context['pending_sum'] = pending_trips.aggregate(Sum('amount_owed'))
+        context['pending_distance'] = pending_trips.aggregate(Sum('distance'))
+
+        #Stats for Paid Reimbursements
+        paid_trips = self.trips.filter(staff=self.object, paid=True, approved=True)
+        context['paid_trips'] = paid_trips
+        context['paid_sum'] = paid_trips.aggregate(Sum('distance'))
+        context['paid_distance'] = paid_trips.aggregate(Sum('distance'))
+
+        #Other Context stuff
         context['helper'] = TripFormHelper()
-        context['approved_trips'] = Trip.objects.filter(staff=self.object, approved=True)
         context['current'] = get_current_payperiod()
         try:
             context['supervisor'] = Group.objects.get(name='Supervisors')
@@ -59,25 +76,31 @@ def group_required(*group_names):
             if bool(u.groups.filter(name__in=group_names)) | u.is_superuser:
                 return True
         return False
-    return user_passes_test(in_groups)
+    return user_passes_test(in_groups, login_url='/')
 
 @group_required('admin','supervisor')
 def ApproveView(request, pk):
     trips = Trip.objects.filter(staff=pk, approved=False).update(approved=True)
-    messages.success(request, 'All trips approved')
+    if trips:
+        messages.success(request, 'All pending reimbursements approved')
+    else:
+        messages.success(request, 'No reimbursements to approve.')
     return redirect ("mileage:profile", pk=pk)
 
 @group_required('admin')
 def PayView(request, pk):
-    trips = Trip.objects.filter(staff=pk, paid=False).update(paid=True)
-    messages.success(request, 'All trips marked as paid pending')
+    trips = Trip.objects.filter(staff=pk, approved=True, paid=False).update(paid=True)
+    if trips:
+        messages.success(request, 'All reimbursements marked as paid pending.')
+    else:
+        messages.success(request, 'No reimbursements to pay.')
     return redirect ("mileage:profile", pk=pk)
 
 
 #This is the staff's add trip view
 class TripWizard(views.LoginRequiredMixin,
     SessionWizardView):
-    template_name = 'mileage/trip_wizardform.html'
+    template_name = 'mileage/home.html'
     form_list = [TripStartForm, TripEndForm]
     model = Trip
     
@@ -86,6 +109,11 @@ class TripWizard(views.LoginRequiredMixin,
             data = self.get_cleaned_data_for_step('0') or {}
             return data
         return self.initial_dict.get(step, {})
+
+    def get_context_data(self, **kwargs):
+        context = super(TripWizard, self).get_context_data(**kwargs)
+        context['current'] = get_current_payperiod()
+        return context
 
     def done(self, form_list, **kwargs):
         instance = Trip()

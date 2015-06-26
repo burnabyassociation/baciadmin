@@ -3,7 +3,7 @@
 <html>
 <head>
     <title>{% block title %}BACI Mileage{% endblock title %}</title>
-    
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
     <!--Bootstrap and Font Awesome Stuff -->
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
@@ -33,7 +33,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" style="color:#FFF" href="/"><i class="fa fa-car"></i> BACI Mileage Reimbursement</a>
+          <a class="navbar-brand" style="color:#000" href="/"><i class="fa fa-car"></i> BACI Mileage Reimbursement</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse navbar-right">
           <ul class="nav navbar-nav">
@@ -46,11 +46,11 @@
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user"></i> {{user.email}} <span class="caret"></span></a>
               <ul class="dropdown-menu">
-                <li><a href="#">My Reimbursements</a></li>
+                <li><a href="{{ user.staff.get_absolute_url }}">My Reimbursements</a></li>
                 <li role="separator" class="divider"></li>
                 <li class="dropdown-header">Links</li>
                 <li><a href="#">Back To Email</a></li>
-                <li><a href="#">Settings</a></li>
+                <li><a href="{% url 'account_logout' %}">Logout</li></a>
               </ul>
             </li>
           </ul>
@@ -58,23 +58,26 @@
       </div>
     </nav>
 
-        <div class="container info-bar">
-        {% block info %}{% endblock %}
-        </div>
-        <!---MESSAGES -->
-
-                {% if messages %}
-            <ul style="list-style:none; padding-left:0;" class="messages">
+        {% if messages %}
+            <ul style="list-style:none; padding-left:0; margin-bottom:0px;" class="messages">
                 {% for message in messages %}
-                  <li{% if message.tags %} class="alert alert-fixed-top alert-{{ message.tags }}"{% endif %}>{{ message }}</li>
+                  <li{% if message.tags %} style="margin-bottom:0px" class="alert alert-fixed-top alert-{{ message.tags }}"{% endif %}>{{ message }}</li>
                 {% endfor %}
             </ul>
-            </div>
         {% endif %}
 
-        <div class="container content">
+
+            {% block info %}{% endblock %}
+            {% block head %} {% endblock %}
             {% block content %}{% endblock %}
-        </div>
+            
 
 </body>
 </html>
+<script>
+window.setTimeout(function() {
+    $(".alert").fadeTo(500, 0).slideUp(500, function(){
+        $(this).remove(); 
+    });
+}, 2000);
+</script>

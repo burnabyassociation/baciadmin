@@ -47,12 +47,14 @@ class TripStartForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(TripStartForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
+        self.helper.form_class = 'form-horizontal'
+        self.helper.form_show_labels = False
         self.helper.layout = Layout(
-            Fieldset('Enter your starting mileage or 0 for an odometer.',
-                Field('trip_begin', type="number")),
-
+            Field('trip_begin', type="number", placeholder="Record your starting mileage", css_class="mileage-input"),
+            Field('trip_end', type="hidden", placeholder="Record your ending mileage"),
+            HTML("<h4 style='padding-left:12px;'><small>*If using an odometer, record 0.</small></h4>"),
             ButtonHolder (
-                Submit('next', 'Next', css_class='btn-primary')
+                Submit('next', 'Next', css_class='btn-primary pull-right')
                 )
             )
 
@@ -72,14 +74,15 @@ class TripEndForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(TripEndForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
+        self.helper.form_class = 'form-horizontal'
         self.helper.layout = Layout(
             Fieldset(
-                'Finish the form by filling in the ending mileage and the description of your trip.',
-                Field('trip_begin'),
-                Field('trip_end'),
-                Field('description')),
+                "<h4>Finish by filling in the ending mileage and the description of your trip.</h4>",
+                Field('trip_begin', type="number", css_class="col-lg-6 mileage-input"),
+                Field('trip_end', type="number", placeholder="Record your ending mileage", css_class="col-lg-6 mileage-input"),
+                Field('description', placeholder="Write a description of your trip", css_class="mileage-input")),
             ButtonHolder (
-                Submit('add', 'Add', css_class='btn-primary')
+                Submit('add', 'Add', css_class='btn-primary pull-right')
                 )
             )
 
@@ -91,7 +94,7 @@ class TripEndForm(forms.ModelForm):
         if trip_end < 0:
             raise ValidationError("Ending Mileage cannot be negative.")
         if trip_end < trip_begin:
-            raise ValidationError("Ending mileage cannot be less than beginning.")
+            raise ValidationError("Ending mileage cannot be less than beginning mileage.")
         return cleaned_data
 
     class Meta:
