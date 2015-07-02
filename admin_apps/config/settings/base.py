@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'mileage',
     'crispy_forms',
     'formtools',
+    'rest_framework',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -117,6 +118,11 @@ LOGIN_REDIRECT_URL = '/'
 ACCOUNT_LOGOUT_ON_GET = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
+    'PAGE_SIZE': 10
+}
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [

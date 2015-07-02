@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 <!-- Adding a Trip Section -->
-{% block info %}
+{% block content %}
+<div class="container">
 <div class="page-header">
   <h1> Supervisor: Dashboard</h1>
         <h4> Current Pay Period: <small>
@@ -19,8 +20,6 @@
         {% endif %}
         </small></h4>
 </div>
-{% endblock %}
-{% block content %}
 
     <div class="col-md-12">
     <legend>Staff Reimbursements</legend>
@@ -48,4 +47,5 @@
         </tbody>
     </table>
     </div>
+</div>
 {% endblock %}

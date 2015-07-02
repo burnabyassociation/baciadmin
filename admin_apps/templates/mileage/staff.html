@@ -1,50 +1,41 @@
 {% extends "base.html" %}
-{% block info %}
-<!-- Adding a Trip Section -->
-<div class="container">
-    <div class="col-md-12">
-    </div>
-</div>
 
-{% endblock %}
 {% block content %}
 <div class="container">
-<div class="page-header">
-  <h1> {{object.user.username}}: Reimbursements</h1>
-          <h4> Current Pay Period: <small>{{ current.due }}</small></h4>
-        <h4> Department: <small>{{ user.groups.all.0 }}</small></h4>
-
-</div>
-
-<form action="." method="post">
-    {{ formset.management_form }}
-    {% csrf_token %}
-    <div class="emptystaff">
-        {{ form }}
+    <div class="page-header">
+      <h1> {{object.user.username}}: Reimbursements</h1>
+            <h4> Current Pay Period: <small>{{ current.due }}</small></h4>
+            <h4> Department: <small>{{ user.groups.all.0 }}</small></h4>
     </div>
+
+    <form action="." method="post">
+        {{ formset.management_form }}
+        {% csrf_token %}
+        <div class="emptystaff">
+            {{ form }}
+        </div>
 
 
     <div class="tripset col-md-12">
-<div style="padding-bottom:5px">
-{% for group in user.groups.all %}
-{% if group.name == 'supervisor' %}
-<a href="{{ user.staff.get_approve_url }}">
-<div class="btn btn-default">
-MARK ALL AS APPROVED
-</div>
-</a>
-{% endif %}
-{% endfor %}
-{% for group in user.groups.all %}
-{% if group.name == 'admin' %}
-<a href="{{ user.staff.get_pay_url }}">
-<div class="btn btn-default">
-MARK ALL AS PAID
-</div>
-</a>
-{% endif %}
-{% endfor %}
-</div>
+
+        <div style="padding-bottom:5px">
+            {% for group in user.groups.all %}
+                {% if group.name == 'supervisor' %}
+                    <a href="{{ user.staff.get_approve_url }}">
+                        <div class="btn btn-default">MARK ALL AS APPROVED</div>
+                    </a>
+                {% endif %}
+            {% endfor %}
+
+            {% for group in user.groups.all %}
+                {% if group.name == 'admin' %}
+                    <a href="{{ user.staff.get_pay_url }}">
+                        <div class="btn btn-default">MARK ALL AS PAID</div>
+                    </a>
+                {% endif %}
+            {% endfor %}
+        </div>
+        
     <legend><h4>Applied Reimbursements<small> 
     {% if applied_distance.distance__sum %}
     Total Distance Travelled: {{applied_distance.distance__sum}}kms

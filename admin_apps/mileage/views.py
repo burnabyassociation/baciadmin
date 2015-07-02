@@ -199,4 +199,3 @@ class TripListView(
     def post(self, request, *args, **kwargs):
         view = TripAddView.as_view()
         return view(request, *args, **kwargs)
-
