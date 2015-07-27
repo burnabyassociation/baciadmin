@@ -7,13 +7,13 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mileage', '0001_initial'),
+        ('mileage', '0002_auto_20150727_1305'),
     ]
 
     operations = [
         migrations.AlterField(
             model_name='trip',
-            name='amount_owed',
-            field=models.DecimalField(max_digits=10, decimal_places=2),
+            name='description',
+            field=models.CharField(max_length=255),
         ),
     ]

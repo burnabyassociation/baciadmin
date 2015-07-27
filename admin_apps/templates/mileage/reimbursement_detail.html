@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+{% load crispy_forms_tags %}
+
+<div class="container">
+    <div class="page-header">
+        <h2>Editing Reimbursement <br><small>department: {{object.department}} - payperiod: {{object.payperiod}}</h2>
+    </div>
+
+    <div class="accordion" id="accordion2">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+                <div class="btn btn-default">Add a Trip</div>
+                <br><br>
+            </a>
+        </div>
+        <div id="collapseOne" class="accordion-body collapse">
+            <div class="accordion-inner">
+                <form action="" method="post"> {% csrf_token %}
+                    {{form|crispy}}
+                    <input type="submit" value="Add" />
+                 </form>
+            </div>
+        </div>
+
+    <h4>Mileage Trips</h4>
+    <div class="table-responsive">
+        <table class="table table-responsive" id="tripTable" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <td>Date</td>
+                    <td>Start</td>
+                    <td>End</td>
+                    <td>Distance</td>
+                    <td>Description of Trip</td>
+                    <td>Amount Owed</td>
+                </tr>
+            </thead>
+            <tbody>
+            
+            {% for trip in trips %}
+                <tr>
+                    <td>{{ trip.created|date:"d/m/y f A" }}</td>
+                    <td>{{ trip.trip_begin }}</td>
+                    <td>{{ trip.trip_end }}</td>
+                    <td>{{ trip.distance }} kms</td>
+                    <td>{{ trip.description }}</td>
+                    <td>${{ trip.amount_owed}}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div id="clear" class="btn btn-default">Clear All Trips</div> 
+    <div id="print" class="btn btn-default">Print</div> 
+</div>
+
+<script>
+$( "#print" ).click(function() {
+  window.print()
+});
+</script>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+      <h1>Reimbursements</h1>
+            <h4> Current Pay Period: <small>{{ object.payperiod }}</small></h4>
+            <h4> Department: <small>{{ object.department }}</small></h4>
+    </div>
+
+    <form action="." method="post">
+        {{ formset.management_form }}
+        {% csrf_token %}
+        <div class="emptystaff">
+            {{ form }}
+        </div>
+
+    {% regroup formset by instance as form_list %}
+    {% for form in form_list %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">{{ form.grouper }}</h2>
+            </div>
+            <ul class="list group" style="padding:0px;margin:0px ">
+
+                {% for form in form.list %}
+                <li class="clearfix list-group-item" style="word-wrap: break-word;">
+                    <div class="col-md-9">
+                        {% for hidden in form.hidden_fields %}
+                            {{ hidden }}
+                        {% endfor %}
+                        <div class="hidden">{{ form.trip_begin }}</div>
+                        <div class="hidden">{{ form.approved }}</div>
+                        <div class="hidden">{{ form.paid }}</div>
+                        <div class="hidden">{{ form.trip_end }}</div>
+                        <div class="hidden">{{ form.DELETE }}</div>
+                        <div class="hidden">{{ form.created }}</div>
+                        <div class="hidden">{{ form.description }}</div>
+                        <div class="hidden">{{ form.distance }}</div>
+                        <div class="hidden">{{ form.amount_owed }}</div>
+                        <div class="row" style="word-wrap: break-word;">
+                            Travelled <b>{{ form.distance }}kms</b> and applied <b> ${{form.instance.amount_owed }}</b> on {{form.instance.created.date}}
+                        </div>
+                        Motive of Trip: {{ form.instance.description }}
+                    </div>
+
+                        <div class="col-md-3">
+                        {% for group in user.groups.all %}
+                            {% if group.name == 'supervisor' %}
+                                Approve: {{ form.approved }}
+                            {% endif %}
+                        {% endfor %}
+                        {% for group in user.groups.all %}
+                            {% if group.name == 'admin' %}
+                                Pay: {{ form.paid }}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                </li>
+                {% endfor %}
+            </ul>
+
+        </div>
+    {% endfor %}
+                    <div class="pull-right">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+
+</form>
+
+</div>
+{% endblock %}

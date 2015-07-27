@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+    <!--First block on the page to show general information -->
+    <div class="page-header">
+      <h1>New Reimbursement</h1>
+    </div>
+
+    <form action="" method="post">{% csrf_token %}
+        {{ form.as_p }}
+    <input type="submit" value="Create" />
+    </form>
+</div>
+
+{% endblock %}

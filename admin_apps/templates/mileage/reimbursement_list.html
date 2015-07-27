@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<script>
+$(document).ready(function(){
+    $("textarea").attr({"rows": "4",
+    });
+});
+</script>
+<div class="container">
+    <!--First block on the page to show general information -->
+    <div class="page-header">
+      <h1>Your Reimbursements</h1>
+      <a href="{% url 'mileage:create_reimbursement' %}"><div class="btn btn-default">New Reimbursement</div></a>
+    </div>
+    
+    <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Title/Pay Period</th>
+        <th>Department</th>
+        <th>Created Date</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for reimbursement in object_list %}
+      <tr>
+        <td><a href="{{reimbursement.get_absolute_url}}">{{ reimbursement.payperiod }}</a></td>
+        <td>{{ reimbursement.department }}</td>
+        <td>{{ reimbursement.created.date }}</td>
+      </tr>
+    {% empty %}
+        <tr>No reimbursements</tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+</div>
+{% endblock %}

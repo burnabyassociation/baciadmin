@@ -14,24 +14,18 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Payperiod',
+            name='Reimbursement',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('created', models.DateTimeField(default=datetime.datetime.now)),
                 ('modified', models.DateTimeField(auto_now=True)),
-                ('due', models.DateField()),
+                ('department', models.CharField(max_length=25)),
+                ('payperiod', models.CharField(max_length=25)),
+                ('staff', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'abstract': False,
             },
-        ),
-        migrations.CreateModel(
-            name='Staff',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('slug', models.SlugField(max_length=255, blank=True)),
-                ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL)),
-            ],
         ),
         migrations.CreateModel(
             name='Trip',
@@ -42,11 +36,9 @@ class Migration(migrations.Migration):
                 ('trip_begin', models.IntegerField()),
                 ('trip_end', models.IntegerField(default=0)),
                 ('description', models.TextField()),
-                ('paid', models.BooleanField(default=False)),
-                ('approved', models.BooleanField(default=False)),
-                ('amount_owed', models.DecimalField(max_digits=6, decimal_places=2)),
+                ('amount_owed', models.DecimalField(max_digits=10, decimal_places=2)),
                 ('distance', models.IntegerField(default=False, blank=True)),
-                ('staff', models.ForeignKey(to='mileage.Staff')),
+                ('reimbursement', models.ForeignKey(to='mileage.Reimbursement')),
             ],
             options={
                 'abstract': False,
