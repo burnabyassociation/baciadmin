@@ -14,6 +14,18 @@ body {
     }
 }
 
+@media print{
+    .ph{
+        display: none;
+    }
+    .pd{
+        display: inline !important;
+    }
+}
+
+.pd {
+    display: none;
+}
 .content {
     position:relative;
 }

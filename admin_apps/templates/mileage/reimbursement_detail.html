@@ -3,15 +3,21 @@
 {% load crispy_forms_tags %}
 
 <div class="container">
-    <div class="page-header">
+    <div class="page-header ph">
         <h2>Editing Reimbursement <br><small>department: {{object.department}} - payperiod: {{object.payperiod}}</h2>
+    </div>
+
+    <div class="pd">
+        <h2><small>department: {{object.department}} 
+        <br>payperiod: {{object.payperiod}}
+        <br>name: {{user.email}}</small></h2>
     </div>
 
     <div class="accordion" id="accordion2">
     <div class="accordion-group">
         <div class="accordion-heading">
             <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
-                <div class="btn btn-default">Add a Trip</div>
+                <div class="btn btn-default ph">Add a Trip</div>
                 <br><br>
             </a>
         </div>
@@ -52,8 +58,8 @@
             </tbody>
         </table>
     </div>
-    <div id="clear" class="btn btn-default">Clear All Trips</div> 
-    <div id="print" class="btn btn-default">Print</div> 
+    <div id="clear" class="btn btn-default ph">Clear All Trips</div> 
+    <div id="print" class="btn btn-default ph">Print</div> 
 </div>
 
 <script>
