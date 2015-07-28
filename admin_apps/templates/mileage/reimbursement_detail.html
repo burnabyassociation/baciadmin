@@ -7,22 +7,22 @@
         <h2>Editing Reimbursement <br><small>department: {{object.department}} - payperiod: {{object.payperiod}}</h2>
     </div>
 
-    <div class="pd">
+    <div class="page-header pd">
         <h2><small>department: {{object.department}} 
         <br>payperiod: {{object.payperiod}}
-        <br>name: {{user.email}}</small></h2>
+        <br>name: {{user.get_full_name}}</small></h2>
     </div>
 
     <div class="accordion" id="accordion2">
     <div class="accordion-group">
-        <div class="accordion-heading">
-            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+        <div class="accordion-heading ph">
+            <a class="accordion-toggle collapsed ph" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
                 <div class="btn btn-default ph">Add a Trip</div>
                 <br><br>
             </a>
         </div>
         <div id="collapseOne" class="accordion-body collapse">
-            <div class="accordion-inner">
+            <div class="accordion-inner ph">
                 <form action="" method="post"> {% csrf_token %}
                     {{form|crispy}}
                     <input type="submit" value="Add" />
@@ -60,6 +60,8 @@
     </div>
     <div id="clear" class="btn btn-default ph">Clear All Trips</div> 
     <div id="print" class="btn btn-default ph">Print</div> 
+
+    
 </div>
 
 <script>

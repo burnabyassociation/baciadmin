@@ -125,6 +125,7 @@ REST_FRAMEWORK = {
 }
 
 STATIC_URL = '/static/'
+STATIC_ROOT = "/var/www/app.gobaci.com/static/"
 STATICFILES_DIRS = [
     os.path.join(os.path.dirname(BASE_DIR), 'static')
 ]

@@ -15,20 +15,31 @@ body {
 }
 
 @media print{
+
     .ph{
-        display: none;
+        display:none;
     }
+
     .pd{
         display: inline !important;
+        background-color:red;
     }
+
+}
+
+.sign{
+        background-image: url('./signatures.png');
+        background-color: red !important;
 }
 
 .pd {
     display: none;
 }
+
 .content {
     position:relative;
 }
+
 .custom-nav {
     background-color: #FFF;
     color: #000;
