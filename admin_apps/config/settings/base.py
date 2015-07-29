@@ -41,7 +41,7 @@ INSTALLED_APPS = (
     'mileage',
     'crispy_forms',
     'formtools',
-    'rest_framework',
+    'datetimewidget',
 )
 
 MIDDLEWARE_CLASSES = (

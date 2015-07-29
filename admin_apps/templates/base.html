@@ -5,57 +5,48 @@
     <title>{% block title %}BACI Mileage{% endblock title %}</title>
     <meta name="viewport" content="width=device-width, user-scalable=no" />
     <!--Bootstrap and Font Awesome Stuff -->
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     </script></script>
 
-    <!--table stuff-->
-    <script src="http://cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"></script>
-    <script src="http://cdn.datatables.net/1.10.7/css/jquery.dataTables.css"></script>
+    <!--extra js stuff-->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/3.1.3/css/jasny-bootstrap.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/3.1.3/js/jasny-bootstrap.min.js"></script>
     <script src="{% static "bootstrap-switch.min.js" %}"></script>
+    <script src="{% static "footable.js" %}"></script>
 
+    
     <!-- Custom CSS -->
     <link rel="stylesheet" type="text/css" href="{% static "style.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "footable.core.min.css" %}">
     <link rel="stylesheet" type="text/css" href="{% static "bootstrap-switch.min.css" %}">
-</head>
+    {{ form.media }}
 
+</head>
 <body>
      <!-- Fixed navbar -->
 
-    <nav class="custom-nav navbar navbar-default navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" style="color:#000" href="/"><i class="fa fa-car"></i> BACI Mileage Reimbursement</a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse navbar-right">
-          <ul class="nav navbar-nav">
-            {% for group in user.groups.all %}
-                {% if group.name == 'supervisor' or 'admin' %}
-                    <li><a href="{% url 'mileage:manage' %}">Manage Reimbursements</a></li>
-                {% endif %}
-            {% endfor %}
-            <li><a href="#help">Help</a></li>
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user"></i> {{user.email}} <span class="caret"></span></a>
-              <ul class="dropdown-menu">
-                <li class="dropdown-header">Links</li>
-                <li><a href="#">Back To Email</a></li>
-                <li><a href="{% url 'account_logout' %}">Logout</li></a>
-              </ul>
-            </li>
+        <div class="nav-padding-top navmenu navmenu-default navmenu-fixed-left offcanvas-sm">
+          <a class="navmenu-brand visible-md visible-lg" href="{% url 'mileage:home' %}">BACI Mileage Reimbursement <small>Logged in as {{user.email}}</small></a>
+          <ul class="nav navmenu-nav">
+            <li><a href="{% url 'account_logout' %}"><div class="btn btn-default">Logout</div></a></li>
+            <li><a href="{% url 'mileage:create_reimbursement' %}"><div class="btn btn-default">New Reimbursement</div></a></li>
+            <li><a style="color:#000;">Reimbursements</li></a>
+            {% block reimbursements %}{% endblock %}
           </ul>
-        </div><!--/.nav-collapse -->
-      </div>
-    </nav>
+        </div>
 
+    <div class="navbar navbar-default navbar-fixed-top hidden-md hidden-lg">
+      <button type="button" class="navbar-toggle" data-toggle="offcanvas" data-target=".navmenu">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="{% url 'mileage:home' %}">BACI Mileage Reimbursement</small></a>
+    </div>
         {% if messages %}
             <ul style="list-style:none; padding-left:0; margin-bottom:0px;" class="messages">
                 {% for message in messages %}

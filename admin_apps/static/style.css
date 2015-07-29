@@ -1,36 +1,66 @@
 body {
-    background-color:#f9f9f9;
-    color: #141823;
-    padding-top:50px;
+    background-color:#FFF;
+    color: #141823
 }
 
-.collapse-pic {
-    display:none;
-    }
-
-@media (min-width: 768px){
-    .collapse-pic{
-        display:block;
-    }
+@media (min-width: 992px) {
+  body {
+    padding-left: 300px;
+  }
 }
 
-@media print{
-
-    .ph{
+@media (max-width: 992px){
+    body {
+        padding-top: 40px;
+    }
+    .nav-padding-top {
+        padding-top:50px;
+    }
+    #hide {
         display:none;
     }
 
+}
+
+.blue {
+    color:#428bca;
+}
+
+.pd{
+    display:none;
+}
+
+.table-responsive
+{
+    overflow-x: auto;
+}
+
+@media print{
+    #hide{
+        display:block;
+    }
+    #del{
+        display:none;
+    }
+    .ph{
+        display:none;
+    }
     .pd{
         display: inline !important;
         background-color:red;
     }
 
-}
+    .table {
+        word-wrap: break-word;
+        overflow: visible;
+        padding: 0px;
+    }
 
 .sign{
         background-image: url('./signatures.png');
         background-color: red !important;
 }
+
 
 .pd {
     display: none;
@@ -118,3 +148,4 @@ body {
     text-align: center;
     border-top: 1px solid #e5e5e5;
 }
+

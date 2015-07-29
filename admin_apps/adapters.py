@@ -9,6 +9,24 @@ from django.utils import timezone
 from django.shortcuts import redirect
 from django.forms.models import BaseInlineFormSet
 
+class OwnershipMixin(object):
+    """
+    Mixin providing a dispatch overload that checks object ownership. is_staff and is_supervisor
+    are considered object owners as well. This mixin must be loaded before any class based views
+    are loaded for example class SomeView(OwnershipMixin, ListView)
+    """
+    def dispatch(self, request, *args, **kwargs):
+        self.request = request
+        self.args = args
+        self.kwargs = kwargs
+        # we need to manually "wake up" self.request.user which is still a SimpleLazyObject at this point
+        # and manually obtain this object's owner information.
+        current_user = self.request.user._wrapped if hasattr(self.request.user, '_wrapped') else self.request.user
+        object_owner = getattr(self.object, 'staff')
+
+        if current_user != object_owner:
+            raise PermissionDenied
+        return super(OwnershipMixin, self).dispatch(request, *args, **kwargs)
 
 class BACISocialAccountAdapter(DefaultSocialAccountAdapter):
 	def populate_user(self, request, sociallogin, data):

@@ -42,6 +42,7 @@ class Trip(TimeStampedModel):
     and the end of the odometer.
     """
     reimbursement = models.ForeignKey(Reimbursement)
+    trip_date = models.DateTimeField()
     trip_begin = models.IntegerField(blank=False)
     trip_end = models.IntegerField(default=0)
     description = models.CharField(max_length=255, blank=False)
@@ -57,5 +58,5 @@ class Trip(TimeStampedModel):
         super(Trip, self).save(*args, **kwargs)
 
 
-    def get_absolute_url(self):
-        pass
+    def get_delete_url(self):
+        return reverse('mileage:delete_trip', kwargs={'pk': self.id})

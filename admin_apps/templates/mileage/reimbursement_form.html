@@ -1,8 +1,14 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 
+{% block reimbursements %}
+  {% for reimbursement in reimbursements %}
+    <li><a href="{{reimbursement.get_absolute_url}}">{{ reimbursement.payperiod }}</a></li>
+    {% endfor %}
+{% endblock %}
+
 {% block content %}
-<div class="container">
+<div class="container" style="width: 100%;">
     <!--First block on the page to show general information -->
     <div class="page-header">
       <h1>New Reimbursement</h1>

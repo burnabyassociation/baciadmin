@@ -1,16 +1,31 @@
 {% extends "base.html" %}
+
+{% block reimbursements %}
+  {% for reimbursement in reimbursements %}
+    <li><a href="{{reimbursement.get_absolute_url}}">{{ reimbursement.payperiod }}</a></li>
+    {% endfor %}
+{% endblock %}
+
+
 {% block content %}
 {% load crispy_forms_tags %}
 
-<div class="container">
+<div class="container" style="display:table; width: 100%;">
     <div class="page-header ph">
-        <h2>Editing Reimbursement <br><small>department: {{object.department}} - payperiod: {{object.payperiod}}</h2>
+        <h2>Editing Reimbursement <br><small>department: {{object.department}} - payperiod: {{object.payperiod}}</small></h2>
+        <a href="{% url 'mileage:delete_reimbursement' object.pk %}"><div id="del-reimbursement" class="btn btn-default">Delete Reimbursement</div></a></li>
+        </br></br>
+            <p>This form is for your personal vehicle usage only. Only include one programme per form. If you have
+            mileage for multiple programmes you must submit a separate form for each programme.
+    </p>
     </div>
 
     <div class="page-header pd">
-        <h2><small>department: {{object.department}} 
-        <br>payperiod: {{object.payperiod}}
-        <br>name: {{user.get_full_name}}</small></h2>
+        <
+        <h2>Mileage Reimbursement Form</br>
+        <small><b>Department:</b> {{object.department}} 
+        <br><b>Title / Payperiod:</b> {{object.payperiod}}
+        <br><b>Please Pay:</b> {{user.email}}</small></h2>
     </div>
 
     <div class="accordion" id="accordion2">
@@ -18,6 +33,7 @@
         <div class="accordion-heading ph">
             <a class="accordion-toggle collapsed ph" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
                 <div class="btn btn-default ph">Add a Trip</div>
+                <div id="print" class="btn btn-default ph">Print</div> 
                 <br><br>
             </a>
         </div>
@@ -29,42 +45,66 @@
                  </form>
             </div>
         </div>
+    </div>
+    </div>
 
     <h4>Mileage Trips</h4>
-    <div class="table-responsive">
-        <table class="table table-responsive" id="tripTable" cellspacing="0" width="100%">
+    {% if trips %}
+    <div class="table-responsive">          
+        <table class="table">
             <thead>
                 <tr>
+                    <td id="del">Delete</td>
                     <td>Date</td>
                     <td>Start</td>
                     <td>End</td>
                     <td>Distance</td>
-                    <td>Description of Trip</td>
-                    <td>Amount Owed</td>
+                    <td id="hide">Description of Trip</td>
                 </tr>
             </thead>
             <tbody>
             
             {% for trip in trips %}
                 <tr>
-                    <td>{{ trip.created|date:"d/m/y f A" }}</td>
-                    <td>{{ trip.trip_begin }}</td>
-                    <td>{{ trip.trip_end }}</td>
-                    <td>{{ trip.distance }} kms</td>
-                    <td>{{ trip.description }}</td>
-                    <td>${{ trip.amount_owed}}</td>
+                    <td id="del"><a href="{{trip.get_delete_url}}"> <i id="del-trip" class="fa fa-times"></i></a></td>
+                    <td>{{ trip.created|date:"d/m/y" }}</td>
+                    <td>{{ trip.trip_begin }}km</td>
+                    <td>{{ trip.trip_end }}km</td>
+                    <td>{{ trip.distance }}km</td>
+                    <td id="hide"><div style="text-overflow: ellipsis;">{{ trip.description }}</div></td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
     </div>
-    <div id="clear" class="btn btn-default ph">Clear All Trips</div> 
-    <div id="print" class="btn btn-default ph">Print</div> 
-
-    
+    <div class="position:fixed;bottom:0;">
+        <table class="table table-hover">
+                <tr>
+                    <td>Total KM's Driven:</td>
+                    <td>{{total_travelled.distance__sum}}kms</td>
+                </tr>
+                <tr>
+                    <td>Total Amount Owed:</td>
+                    <td>${{total_owed.amount_owed__sum}}</td>
+                </tr>
+                <tr>
+                    <td>Approved By:</td>
+                    <td></td>
+                </tr>
+        </table>
+    </div>
+    {% else %}
+    <p>Add a trip!</p>
+    {% endif %}
 </div>
 
 <script>
+$( document ).ready(function() {
+    $("#del-reimbursement").attr( "onclick", "return confirm('Are you sure you want to delete this?')" );
+    $(".fa-times").each(function(i) {
+        $(this).attr('onclick', "return confirm('Are you sure you want to delete this?')")
+    })
+});
 $( "#print" ).click(function() {
   window.print()
 });

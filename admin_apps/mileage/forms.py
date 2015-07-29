@@ -6,6 +6,7 @@ from django.forms.models import inlineformset_factory
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Div, HTML, Field, Fieldset, Submit, Layout, ButtonHolder
 from crispy_forms.bootstrap import StrictButton
+from datetimewidget.widgets import DateTimeWidget
 
 from mileage.models import Trip, Reimbursement
 
@@ -54,5 +55,9 @@ class TripForm(forms.ModelForm):
         return cleaned_data
 
     class Meta:
+        widgets = {
+            #Use localization and bootstrap 3
+            'trip_date': DateTimeWidget(attrs={'id':"date_time"}, usel10n = True, bootstrap_version=3)
+        }
         model = Trip
-        fields = ['trip_begin', 'trip_end', 'description']
+        fields = ['trip_date', 'trip_begin', 'trip_end', 'description']
